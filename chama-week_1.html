@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>CHAMAWEEK 🔥</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="CHAMAWEEK" />
+<meta name="theme-color" content="#0C0908" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0C0908; --card:#171210; --cardup:#1E1714; --border:#2A211B;
+    --orange:#FF5C1A; --amber:#FFB347; --text:#F2EAE1; --muted:#93857A; --green:#7BC47F;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:'Archivo',sans-serif;
+    padding:calc(env(safe-area-inset-top) + 24px) 16px calc(env(safe-area-inset-bottom) + 48px);}
+  .wrap{max-width:560px; margin:0 auto;}
+  button{cursor:pointer; font-family:'Archivo',sans-serif;}
+  button:disabled{opacity:.3; cursor:default;}
+  button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--orange); outline-offset:2px;}
+  input::placeholder,textarea::placeholder{color:var(--muted);}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important; animation:none!important;}}
+
+  .header{display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;}
+  h1{font-family:'Anton',sans-serif; font-size:32px; letter-spacing:1px; margin:0; line-height:1;}
+  h1 span{color:var(--orange);}
+  .header-actions{display:flex; gap:6px; align-items:center;}
+  .sub{color:var(--muted); font-size:13px; margin:0 0 18px;}
+
+  .btn-ghost{background:transparent; border:1px solid var(--border); color:var(--muted);
+    border-radius:8px; padding:6px 12px; font-size:12px; font-weight:600;}
+  .btn-fire{background:var(--orange); border:none; color:#140A05; border-radius:8px;
+    padding:6px 12px; font-size:12px; font-weight:700;}
+  .btn-icon{background:transparent; border:1px solid var(--border); color:var(--muted);
+    border-radius:8px; padding:5px 9px; font-size:14px; line-height:1;}
+  .btn-icon.on{border-color:var(--orange); background:rgba(255,92,26,.12);}
+
+  .meter{background:var(--card); border:1px solid var(--border); border-radius:14px;
+    padding:16px 16px 18px; margin-bottom:16px;}
+  .meter-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;}
+  .meter-label{font-size:11px; font-weight:700; letter-spacing:2px; color:var(--muted);}
+  .meter-nivel{font-family:'Anton',sans-serif; font-size:20px; letter-spacing:1px;}
+  .meter-bar{height:14px; background:#0F0C0A; border-radius:99px; overflow:hidden; border:1px solid var(--border);}
+  .meter-fill{height:100%; border-radius:99px; width:0%;
+    background:linear-gradient(90deg, var(--amber), var(--orange) 60%, #FF2200);
+    transition:width .5s cubic-bezier(.22,1,.36,1);}
+  .meter-bottom{display:flex; justify-content:space-between; margin-top:8px;}
+  .meter-msg{font-size:12px; color:var(--muted);}
+  .meter-count{font-size:12px; font-weight:600;}
+
+  /* Sync */
+  .sync{background:var(--card); border:1px solid var(--border); border-radius:14px;
+    padding:14px 16px 16px; margin-bottom:16px;}
+  .sync label{display:block; font-size:11px; font-weight:700; letter-spacing:2px;
+    color:var(--muted); margin-bottom:8px;}
+  .sync p{font-size:12px; color:var(--muted); margin:0 0 10px; line-height:1.5;}
+  .sync p a{color:var(--amber);}
+  .sync-row{display:flex; gap:8px;}
+  .sync-row input{flex:1; min-width:0; background:#0F0C0A; border:1px solid var(--border);
+    border-radius:10px; padding:10px 12px; color:var(--text); font-size:16px; font-family:'Archivo',sans-serif;}
+  .sync-status{font-size:12px; margin:10px 0 0;}
+  .sync-status.ok{color:var(--green);}
+  .sync-status.err{color:#FF4D4D;}
+  .sync-status.info{color:var(--muted);}
+  .sync-actions{display:flex; gap:8px; margin-top:10px;}
+
+  /* Pomodoro */
+  .pomo{background:var(--card); border:1px solid var(--border); border-radius:14px;
+    padding:14px 16px 16px; margin-bottom:16px; text-align:center;}
+  .pomo-modes{display:flex; gap:6px; justify-content:center; margin-bottom:8px;}
+  .pomo-chip{background:transparent; border:1px solid var(--border); color:var(--muted);
+    border-radius:99px; padding:4px 14px; font-size:11px; font-weight:700; letter-spacing:1px;}
+  .pomo-chip.on{border-color:var(--orange); color:var(--orange); background:rgba(255,92,26,.12);}
+  .pomo-time{font-family:'Anton',sans-serif; font-size:52px; letter-spacing:2px; line-height:1;
+    color:var(--text); margin:6px 0 12px;}
+  .pomo-time.running{color:var(--orange);}
+  .pomo-btns{display:flex; gap:8px; justify-content:center;}
+  .pomo-main{background:var(--orange); border:none; color:#140A05; border-radius:10px;
+    padding:8px 26px; font-size:14px; font-weight:700;}
+  .pomo-sec{background:transparent; border:1px solid var(--border); color:var(--muted);
+    border-radius:10px; padding:8px 14px; font-size:14px;}
+
+  .tabs{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:8px;}
+  .tab{padding:10px 0 8px; border-radius:10px; border:1px solid var(--border); background:var(--card);
+    color:var(--text); font-weight:700; font-size:12px; letter-spacing:1px; position:relative;}
+  .tab.active{border-color:var(--orange); background:rgba(255,92,26,.12); color:var(--orange);}
+  .tab.complete{color:var(--green);}
+  .tab.active.complete{color:var(--orange);}
+  .tab .count{font-size:10px; font-weight:500; color:var(--muted); margin-top:2px;}
+  .tab .today{position:absolute; top:4px; right:5px; width:5px; height:5px; border-radius:99px; background:var(--amber);}
+
+  .flow{display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:16px;}
+  .flow-bar{padding:11px 12px; border-radius:10px; border:1px dashed var(--border);
+    background:var(--card); color:var(--muted); font-weight:700; font-size:12px; letter-spacing:1px;
+    display:flex; justify-content:space-between; align-items:center;}
+  .flow-bar.active{border:1px solid var(--orange); background:rgba(255,92,26,.12); color:var(--orange);}
+  .flow-bar .count{font-weight:500; font-size:11px; color:var(--muted);}
+
+  .notes-card{background:var(--card); border:1px solid var(--border); border-radius:14px;
+    padding:14px 16px 16px; margin-bottom:14px;}
+  .notes-card label{display:block; font-size:11px; font-weight:700; letter-spacing:2px;
+    color:var(--muted); margin-bottom:8px;}
+  .notes-card textarea{width:100%; min-height:100px; background:#0F0C0A; border:1px solid var(--border);
+    border-radius:10px; padding:12px; color:var(--text); font-size:16px; font-family:'Archivo',sans-serif;
+    resize:vertical; line-height:1.5;}
+  .notes-hint{font-size:11px; color:var(--muted); margin:8px 0 0;}
+
+  .list{background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden;}
+  .list-head{padding:10px 12px 10px 16px; border-bottom:1px solid var(--border); display:flex;
+    justify-content:space-between; align-items:center; gap:8px;}
+  .list-head .dia{font-family:'Anton',sans-serif; font-size:16px; letter-spacing:1px;}
+  .list-head-right{display:flex; align-items:center; gap:8px;}
+  .list-head .prog{font-size:12px; color:var(--muted);}
+  .order-btn{background:transparent; border:1px solid var(--border); color:var(--muted);
+    border-radius:8px; padding:4px 10px; font-size:13px; line-height:1;}
+  .order-btn.on{border-color:var(--orange); color:var(--orange); background:rgba(255,92,26,.12);}
+  .empty{padding:26px 16px; text-align:center; color:var(--muted); font-size:14px; line-height:1.5;}
+
+  .task{display:flex; align-items:center; gap:10px; padding:12px 12px 12px 16px;
+    border-bottom:1px solid var(--border); border-left:3px solid transparent;}
+  .task:last-child{border-bottom:none;}
+  .check{width:22px; height:22px; min-width:22px; border-radius:7px; border:2px solid var(--border);
+    background:transparent; color:#140A05; font-size:13px; font-weight:900;
+    display:flex; align-items:center; justify-content:center; padding:0;}
+  .task.done .check{border-color:var(--orange); background:var(--orange);}
+  .task.done.cliente .check{border-color:var(--green); background:var(--green);}
+  .task-body{flex:1; min-width:0;}
+  .task-label{font-size:14px; font-weight:500; word-break:break-word;}
+  .task.done .task-label{text-decoration:line-through; color:var(--muted);}
+  .task-tag{font-size:10px; font-weight:700; letter-spacing:1.5px; color:var(--muted);}
+  .task-tag.meu{color:var(--orange);}
+  .task-actions{display:flex; gap:2px; align-items:center;}
+  .act{background:transparent; border:none; color:var(--muted); font-size:15px; padding:5px 4px; line-height:1;
+    border-radius:6px;}
+  .act:hover{background:var(--cardup);}
+  .act.raio{color:var(--amber);}
+  .del{font-size:16px;}
+  .dot{display:block; width:14px; height:14px; border-radius:99px; border:2px solid var(--muted);}
+  .arrow{font-size:14px; padding:5px 7px;}
+
+  .add{display:flex; gap:8px; margin-top:14px;}
+  .add input{flex:1; min-width:0; background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:10px 14px; color:var(--text); font-size:16px;}
+  .type-toggle{background:var(--card); border:1px solid var(--border); color:var(--muted);
+    border-radius:10px; padding:0 12px; font-size:11px; font-weight:700; letter-spacing:1px;}
+  .type-toggle.meu{background:rgba(255,92,26,.15); border-color:var(--orange); color:var(--orange);}
+  .add-btn{background:var(--orange); border:none; color:#140A05; border-radius:10px;
+    padding:0 16px; font-size:18px; font-weight:700;}
+
+  .legend{color:var(--muted); font-size:11px; margin-top:14px; text-align:center; line-height:1.6;}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>CHAMA<span>WEEK</span></h1>
+    <div class="header-actions">
+      <button class="btn-icon" id="syncBtn" onclick="syncToggleCard()" title="Sincronizar entre aparelhos" aria-label="Sincronizar">☁️</button>
+      <button class="btn-icon" id="pomoBtn" onclick="pomoToggleCard()" title="Pomodoro" aria-label="Pomodoro">🍅</button>
+      <span id="resetArea"><button class="btn-ghost" onclick="askReset()">Nova semana</button></span>
+    </div>
+  </div>
+  <p class="sub" id="subLine"></p>
+
+  <div class="sync hidden" id="syncCard">
+    <label>☁️ SYNC ENTRE APARELHOS</label>
+    <div id="syncBody"></div>
+    <p class="sync-status info" id="syncStatus"></p>
+  </div>
+
+  <div class="pomo hidden" id="pomoCard">
+    <div class="pomo-modes">
+      <button class="pomo-chip on" id="chipFoco" onclick="pomoSetMode('foco')">FOCO · 25</button>
+      <button class="pomo-chip" id="chipPausa" onclick="pomoSetMode('pausa')">PAUSA · 5</button>
+    </div>
+    <div class="pomo-time" id="pomoTime">25:00</div>
+    <div class="pomo-btns">
+      <button class="pomo-main" id="pomoMain" onclick="pomoStartPause()">Iniciar</button>
+      <button class="pomo-sec" onclick="pomoReset()" title="Zerar">↺</button>
+    </div>
+  </div>
+
+  <div class="meter">
+    <div class="meter-top">
+      <span class="meter-label">CONTEÚDO MEU</span>
+      <span class="meter-nivel" id="nivelNome"></span>
+    </div>
+    <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
+    <div class="meter-bottom">
+      <span class="meter-msg" id="nivelMsg"></span>
+      <span class="meter-count" id="meuCount"></span>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="flow">
+    <button class="flow-bar" id="inboxBar" onclick="setDia('inbox')">
+      <span>📥 ENTRADA</span><span class="count" id="inboxCount"></span>
+    </button>
+    <button class="flow-bar" id="radarBar" onclick="setDia('radar')">
+      <span>🎯 RADAR</span><span class="count" id="radarCount"></span>
+    </button>
+  </div>
+
+  <div class="notes-card hidden" id="notesCard">
+    <label for="notesArea">OBSERVAÇÕES DA SEMANA</label>
+    <textarea id="notesArea" placeholder="Anota aqui o que vai moldar a semana: ideias, demandas soltas, gravações pendentes, recados de cliente…"></textarea>
+    <p class="notes-hint">Salva sozinho enquanto você digita.</p>
+  </div>
+
+  <div class="list">
+    <div class="list-head">
+      <span class="dia" id="diaLabel"></span>
+      <div class="list-head-right">
+        <span class="prog" id="diaProg"></span>
+        <button class="order-btn" id="orderBtn" onclick="toggleOrder()" title="Reordenar tarefas" aria-label="Reordenar tarefas">↕</button>
+      </div>
+    </div>
+    <div id="taskList"></div>
+  </div>
+
+  <div class="add">
+    <input id="novoInput" placeholder="Nova tarefa…" onkeydown="if(event.key==='Enter')adicionar()" />
+    <button class="type-toggle" id="typeToggle" onclick="toggleTipo()">CLIENTE</button>
+    <button class="add-btn" onclick="adicionar()" aria-label="Adicionar tarefa">+</button>
+  </div>
+
+  <p class="legend">⚡ hoje · 🕐 amanhã · 🎯 radar · bolinha muda a cor · ↕ reordena e remove<br/><span id="legendSync">Progresso salvo neste aparelho — conecta o ☁️ pra sincronizar celular e PC.</span></p>
+</div>
+
+<script>
+const KEY = "chama-week-v1";
+const SYNC_KEY = "chama-sync-v1";
+const GIST_FILE = "chamaweek.json";
+const DIAS = [
+  {key:"seg", label:"SEG", idx:1},
+  {key:"ter", label:"TER", idx:2},
+  {key:"qua", label:"QUA", idx:3},
+  {key:"qui", label:"QUI", idx:4},
+  {key:"sex", label:"SEX", idx:5},
+  {key:"sab", label:"SÁB", idx:6},
+  {key:"dom", label:"DOM", idx:0},
+];
+const COLORS = [
+  {k:"none",  v:null},
+  {k:"red",   v:"#FF4D4D"},
+  {k:"amber", v:"#FFB347"},
+  {k:"purple",v:"#B48CFF"},
+  {k:"blue",  v:"#5CA8FF"},
+  {k:"green", v:"#7BC47F"},
+];
+const t = (label, type) => ({label, type, done:false, color:"none"});
+const DEFAULT_DAYS = {
+  seg:[
+    t("Bloco CHAMA — 2h de conteúdo próprio","meu"),
+    t("Lobos — vídeo 1","cliente"),
+    t("Lobos — vídeo 2","cliente"),
+    t("Lobos — vídeo 3","cliente"),
+    t("David Miranda — corte de seg","cliente"),
+    t("David Miranda — corte de ter (adiantado)","cliente"),
+  ],
+  ter:[
+    t("Bloco CHAMA — 2h de conteúdo próprio","meu"),
+    t("Bianca Franco — vídeo 1 (semana adiantada)","cliente"),
+    t("Bianca Franco — vídeo 2","cliente"),
+    t("Bianca Franco — vídeo 3","cliente"),
+  ],
+  qua:[
+    t("Bloco CHAMA — 2h de conteúdo próprio","meu"),
+    t("OWC — YouTube Evangelho Sem Filtro 1","cliente"),
+    t("OWC — YouTube Evangelho Sem Filtro 2","cliente"),
+    t("OWC — Kids","cliente"),
+    t("David Miranda — corte de qua","cliente"),
+    t("David Miranda — corte de qui (adiantado)","cliente"),
+  ],
+  qui:[
+    t("Bloco CHAMA — 2h de conteúdo próprio","meu"),
+    t("ADBUENO — corte 1","cliente"),
+    t("ADBUENO — corte 2","cliente"),
+    t("ADBUENO — corte 3","cliente"),
+  ],
+  sex:[
+    t("Bloco CHAMA — 2h de conteúdo próprio","meu"),
+    t("Lobos — vídeo 4","cliente"),
+    t("Lobos — vídeo 5","cliente"),
+    t("David Miranda — cortes de sex/sáb/dom (×3)","cliente"),
+  ],
+  sab:[
+    t("Conferir postagens agendadas do fim de semana","cliente"),
+    t("Livre: gravar conteúdo CHAMA se der vontade","meu"),
+  ],
+  dom:[t("Descanso + 15 min planejando a semana","meu")],
+};
+
+let state = null;
+let dia = null;
+let novoTipo = "cliente";
+let notesTimer = null;
+let orderMode = false;
+
+function todayKey(){
+  const f = DIAS.find(d => d.idx === new Date().getDay());
+  return f ? f.key : "seg";
+}
+function tomorrowKey(){
+  const f = DIAS.find(d => d.idx === (new Date().getDay()+1)%7);
+  return f ? f.key : "seg";
+}
+dia = todayKey();
+
+function freshState(){
+  return { days: JSON.parse(JSON.stringify(DEFAULT_DAYS)), inbox: [], radar: [], notes: "", updatedAt: new Date().toISOString() };
+}
+function normalizeState(p){
+  if(p && p.seg) return { days: p, inbox: [], radar: [], notes: "", updatedAt: p.updatedAt || new Date(0).toISOString() };
+  if(p && p.days) return {
+    days: p.days,
+    inbox: p.inbox || p.extras || [],
+    radar: p.radar || [],
+    notes: p.notes || "",
+    updatedAt: p.updatedAt || new Date(0).toISOString()
+  };
+  return null;
+}
+
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw){ state = freshState(); return; }
+    state = normalizeState(JSON.parse(raw)) || freshState();
+  }catch(e){
+    state = freshState();
+  }
+}
+function save(){
+  state.updatedAt = new Date().toISOString();
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+  schedulePush();
+}
+function saveLocalOnly(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+}
+
+function nivelChama(pct){
+  if(pct <= 0) return {nome:"APAGADA", cor:"var(--muted)", msg:"Nenhum conteúdo seu ainda. Acende isso."};
+  if(pct < 34) return {nome:"ESTOPIM", cor:"var(--amber)", msg:"O estopim tá aceso. Não deixa apagar."};
+  if(pct < 67) return {nome:"CHAMA", cor:"var(--orange)", msg:"Tá queimando. Mantém o ritmo."};
+  if(pct < 100) return {nome:"PEGANDO FOGO", cor:"#FF3D00", msg:"Quase lá. Falta pouco."};
+  return {nome:"DINAMITE 🧨", cor:"#FF2200", msg:"Semana 100% sua. É disso que eu tô falando."};
+}
+
+function esc(s){
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+function colorOf(task){
+  const c = COLORS.find(c => c.k === (task.color || "none"));
+  return c ? c.v : null;
+}
+function currentList(){
+  if(dia === "inbox") return state.inbox;
+  if(dia === "radar") return state.radar;
+  return state.days[dia];
+}
+
+function render(){
+  const all = [...Object.values(state.days).flat(), ...state.inbox, ...state.radar];
+  const meu = all.filter(x => x.type === "meu");
+  const cli = all.filter(x => x.type === "cliente");
+  const meuDone = meu.filter(x => x.done).length;
+  const cliDone = cli.filter(x => x.done).length;
+  const allDone = all.filter(x => x.done).length;
+  const pctMeu = meu.length ? Math.round(meuDone/meu.length*100) : 0;
+  const pctTotal = all.length ? Math.round(allDone/all.length*100) : 0;
+  const nivel = nivelChama(pctMeu);
+
+  document.getElementById("subLine").textContent =
+    "Semana geral: " + pctTotal + "% concluída · Clientes " + cliDone + "/" + cli.length;
+  const nomeEl = document.getElementById("nivelNome");
+  nomeEl.textContent = nivel.nome;
+  nomeEl.style.color = nivel.cor;
+  document.getElementById("meterFill").style.width = pctMeu + "%";
+  document.getElementById("nivelMsg").textContent = nivel.msg;
+  document.getElementById("meuCount").textContent = meuDone + "/" + meu.length;
+
+  const hoje = new Date().getDay();
+  document.getElementById("tabs").innerHTML = DIAS.map(d => {
+    const tasks = state.days[d.key] || [];
+    const done = tasks.filter(x => x.done).length;
+    const complete = tasks.length > 0 && done === tasks.length;
+    return '<button class="tab' + (dia===d.key?' active':'') + (complete?' complete':'') + '" onclick="setDia(\'' + d.key + '\')">' +
+      d.label +
+      (hoje===d.idx ? '<span class="today"></span>' : '') +
+      '<div class="count">' + done + '/' + tasks.length + '</div></button>';
+  }).join("");
+
+  const isInbox = dia === "inbox";
+  const isRadar = dia === "radar";
+  document.getElementById("inboxBar").classList.toggle("active", isInbox);
+  document.getElementById("radarBar").classList.toggle("active", isRadar);
+  document.getElementById("inboxCount").textContent = state.inbox.length ? String(state.inbox.length) : "";
+  const radarDone = state.radar.filter(x => x.done).length;
+  document.getElementById("radarCount").textContent = state.radar.length ? radarDone + "/" + state.radar.length : "";
+
+  document.getElementById("notesCard").classList.toggle("hidden", !isInbox);
+  if(isInbox){
+    const ta = document.getElementById("notesArea");
+    if(document.activeElement !== ta) ta.value = state.notes;
+  }
+
+  const tarefas = currentList();
+  const diaDone = tarefas.filter(x => x.done).length;
+  document.getElementById("diaLabel").textContent =
+    isInbox ? "CAIXA DE ENTRADA" : isRadar ? "NO RADAR ESSA SEMANA" : DIAS.find(d => d.key===dia).label;
+  document.getElementById("diaProg").textContent = diaDone + "/" + tarefas.length + " feitas";
+  document.getElementById("orderBtn").classList.toggle("on", orderMode);
+
+  const hj = todayKey(), am = tomorrowKey();
+  const listEl = document.getElementById("taskList");
+  if(tarefas.length === 0){
+    listEl.innerHTML = '<div class="empty">' +
+      (isInbox
+        ? "Caixa vazia. Chegou demanda nova? Joga aqui e depois organiza: ⚡ hoje, 🕐 amanhã ou 🎯 radar."
+        : isRadar
+        ? "Radar limpo. O que precisa sair essa semana mas ainda não tem dia certo? Deixa aqui pra não perder de vista."
+        : "Dia livre. Adiciona uma tarefa abaixo se precisar.") +
+      '</div>';
+  } else {
+    listEl.innerHTML = tarefas.map((task, i) => {
+      let acts = '';
+      if(orderMode){
+        acts += '<button class="act arrow" onclick="moveUp(' + i + ')" title="Subir" aria-label="Subir"' + (i===0?' disabled':'') + '>▲</button>';
+        acts += '<button class="act arrow" onclick="moveDown(' + i + ')" title="Descer" aria-label="Descer"' + (i===tarefas.length-1?' disabled':'') + '>▼</button>';
+        acts += '<button class="act del" onclick="remover(' + i + ')" title="Remover" aria-label="Remover">×</button>';
+      } else {
+        if(dia !== hj) acts += '<button class="act raio" onclick="moveTask(' + i + ',\'' + hj + '\')" title="Fazer hoje" aria-label="Fazer hoje">⚡</button>';
+        if(dia !== am) acts += '<button class="act" onclick="moveTask(' + i + ',\'' + am + '\')" title="Fazer amanhã" aria-label="Fazer amanhã">🕐</button>';
+        if(isInbox) acts += '<button class="act" onclick="toRadar(' + i + ')" title="Mandar pro radar" aria-label="Mandar pro radar">🎯</button>';
+        const cv0 = colorOf(task);
+        acts += '<button class="act" onclick="cycleColor(' + i + ')" title="Mudar cor" aria-label="Mudar cor">' +
+          '<span class="dot" style="' + (cv0 ? 'background:' + cv0 + '; border-color:' + cv0 + ';' : '') + '"></span></button>';
+      }
+      const cv = colorOf(task);
+      const rowStyle = cv
+        ? ' style="border-left-color:' + cv + '; background:linear-gradient(90deg, ' + cv + '1A, transparent 55%);"'
+        : '';
+      return '<div class="task' + (task.done?' done':'') + ' ' + task.type + '"' + rowStyle + '>' +
+        '<button class="check" onclick="toggle(' + i + ')" aria-label="Marcar">' + (task.done?'✓':'') + '</button>' +
+        '<div class="task-body">' +
+          '<div class="task-label">' + esc(task.label) + '</div>' +
+          '<span class="task-tag ' + task.type + '">' + (task.type==="meu"?"🔥 MEU":"CLIENTE") + '</span>' +
+        '</div>' +
+        '<div class="task-actions">' + acts + '</div>' +
+      '</div>';
+    }).join("");
+  }
+
+  document.getElementById("novoInput").placeholder =
+    isInbox ? "Nova demanda que chegou…" : isRadar ? "Demanda da semana, sem dia…" : "Nova tarefa…";
+}
+
+function setDia(k){ dia = k; orderMode = false; render(); }
+function toggleOrder(){ orderMode = !orderMode; render(); }
+function toggle(i){ const l = currentList(); l[i].done = !l[i].done; save(); render(); }
+function remover(i){ currentList().splice(i,1); save(); render(); }
+function moveUp(i){
+  if(i <= 0) return;
+  const l = currentList();
+  [l[i-1], l[i]] = [l[i], l[i-1]];
+  save(); render();
+}
+function moveDown(i){
+  const l = currentList();
+  if(i >= l.length-1) return;
+  [l[i+1], l[i]] = [l[i], l[i+1]];
+  save(); render();
+}
+function cycleColor(i){
+  const task = currentList()[i];
+  const cur = COLORS.findIndex(c => c.k === (task.color || "none"));
+  task.color = COLORS[(cur+1) % COLORS.length].k;
+  save(); render();
+}
+function moveTask(i, targetKey){
+  const l = currentList();
+  const task = l.splice(i,1)[0];
+  state.days[targetKey].push(task);
+  save(); render();
+}
+function toRadar(i){
+  const task = state.inbox.splice(i,1)[0];
+  state.radar.push(task);
+  save(); render();
+}
+function toggleTipo(){
+  novoTipo = novoTipo === "meu" ? "cliente" : "meu";
+  const b = document.getElementById("typeToggle");
+  b.textContent = novoTipo === "meu" ? "🔥 MEU" : "CLIENTE";
+  b.classList.toggle("meu", novoTipo === "meu");
+}
+function adicionar(){
+  const input = document.getElementById("novoInput");
+  const label = input.value.trim();
+  if(!label) return;
+  currentList().push(t(label, novoTipo));
+  input.value = "";
+  save(); render();
+}
+function askReset(){
+  document.getElementById("resetArea").innerHTML =
+    '<button class="btn-fire" onclick="novaSemana()">Zerar tudo</button> ' +
+    '<button class="btn-ghost" onclick="cancelReset()">Voltar</button>';
+}
+function cancelReset(){
+  document.getElementById("resetArea").innerHTML =
+    '<button class="btn-ghost" onclick="askReset()">Nova semana</button>';
+}
+function novaSemana(){
+  for(const k of Object.keys(state.days)) state.days[k].forEach(task => task.done = false);
+  state.inbox.forEach(task => task.done = false);
+  state.radar.forEach(task => task.done = false);
+  save(); cancelReset(); render();
+}
+
+document.getElementById("notesArea").addEventListener("input", function(){
+  state.notes = this.value;
+  clearTimeout(notesTimer);
+  notesTimer = setTimeout(save, 400);
+});
+
+/* ---------- Sync via GitHub Gist ---------- */
+let syncCfg = null;
+let pushTimer = null;
+let syncing = false;
+
+function syncLoadCfg(){
+  try{
+    const raw = localStorage.getItem(SYNC_KEY);
+    syncCfg = raw ? JSON.parse(raw) : null;
+  }catch(e){ syncCfg = null; }
+}
+function syncSaveCfg(){
+  try{
+    if(syncCfg) localStorage.setItem(SYNC_KEY, JSON.stringify(syncCfg));
+    else localStorage.removeItem(SYNC_KEY);
+  }catch(e){}
+}
+function setSyncStatus(msg, cls){
+  const el = document.getElementById("syncStatus");
+  el.textContent = msg;
+  el.className = "sync-status " + (cls || "info");
+}
+function syncRenderCard(){
+  const body = document.getElementById("syncBody");
+  document.getElementById("syncBtn").classList.toggle("on", !!syncCfg);
+  document.getElementById("legendSync").textContent = syncCfg
+    ? "☁️ Sync ativo — marca num aparelho, aparece no outro."
+    : "Progresso salvo neste aparelho — conecta o ☁️ pra sincronizar celular e PC.";
+  if(!syncCfg){
+    body.innerHTML =
+      '<p>Usa tua conta do GitHub como nuvem. Cria um token em <a href="https://github.com/settings/tokens/new?scopes=gist&description=CHAMAWEEK" target="_blank" rel="noopener">github.com/settings/tokens</a> (marca só o escopo <b>gist</b>), cola aqui e conecta. Repete a conexão em cada aparelho com o mesmo token.</p>' +
+      '<div class="sync-row">' +
+        '<input id="tokenInput" type="password" placeholder="ghp_… (token do GitHub)" autocomplete="off" />' +
+        '<button class="btn-fire" onclick="syncConnect()">Conectar</button>' +
+      '</div>';
+  } else {
+    body.innerHTML =
+      '<p>Conectado. Teus dados vivem num Gist secreto da tua conta.</p>' +
+      '<div class="sync-actions">' +
+        '<button class="btn-fire" onclick="syncNow()">Sincronizar agora</button>' +
+        '<button class="btn-ghost" onclick="syncDisconnect()">Desconectar</button>' +
+      '</div>';
+  }
+}
+function syncToggleCard(){
+  document.getElementById("syncCard").classList.toggle("hidden");
+  syncRenderCard();
+}
+async function gh(path, opts){
+  opts = opts || {};
+  const res = await fetch("https://api.github.com" + path, {
+    method: opts.method || "GET",
+    headers: {
+      "Authorization": "Bearer " + syncCfg.token,
+      "Accept": "application/vnd.github+json",
+      ...(opts.body ? {"Content-Type": "application/json"} : {})
+    },
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  if(!res.ok){
+    const err = new Error("GitHub " + res.status);
+    err.status = res.status;
+    throw err;
+  }
+  return res.json();
+}
+async function syncConnect(){
+  const token = document.getElementById("tokenInput").value.trim();
+  if(!token){ setSyncStatus("Cola o token primeiro.", "err"); return; }
+  syncCfg = { token: token, gistId: null };
+  setSyncStatus("Conectando…", "info");
+  try{
+    // procura gist existente
+    const gists = await gh("/gists?per_page=100");
+    const found = gists.find(g => g.files && g.files[GIST_FILE]);
+    if(found){
+      syncCfg.gistId = found.id;
+      syncSaveCfg();
+      setSyncStatus("Gist encontrado. Puxando dados…", "info");
+      await pullRemote(true);
+    } else {
+      const created = await gh("/gists", { method:"POST", body:{
+        description: "CHAMAWEEK — dados do app (não apagar)",
+        public: false,
+        files: { [GIST_FILE]: { content: JSON.stringify(state) } }
+      }});
+      syncCfg.gistId = created.id;
+      syncSaveCfg();
+      setSyncStatus("Conectado ✓ Gist criado e dados enviados.", "ok");
+    }
+    syncRenderCard();
+  }catch(e){
+    syncCfg = null;
+    syncSaveCfg();
+    setSyncStatus(e.status === 401 ? "Token inválido ou sem escopo gist." : "Erro ao conectar. Tenta de novo.", "err");
+    syncRenderCard();
+  }
+}
+function syncDisconnect(){
+  syncCfg = null;
+  syncSaveCfg();
+  setSyncStatus("Desconectado deste aparelho. O Gist continua na tua conta.", "info");
+  syncRenderCard();
+}
+async function pullRemote(force){
+  if(!syncCfg || !syncCfg.gistId || syncing) return;
+  syncing = true;
+  try{
+    const g = await gh("/gists/" + syncCfg.gistId);
+    const f = g.files && g.files[GIST_FILE];
+    if(f && f.content){
+      const remote = normalizeState(JSON.parse(f.content));
+      if(remote && (force || (remote.updatedAt || "") > (state.updatedAt || ""))){
+        state = remote;
+        saveLocalOnly();
+        render();
+      }
+    }
+    setSyncStatus("Sincronizado ✓ " + new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}), "ok");
+  }catch(e){
+    setSyncStatus("Falha ao puxar dados (offline?).", "err");
+  }finally{
+    syncing = false;
+  }
+}
+async function pushRemote(){
+  if(!syncCfg || !syncCfg.gistId) return;
+  try{
+    await gh("/gists/" + syncCfg.gistId, { method:"PATCH", body:{
+      files: { [GIST_FILE]: { content: JSON.stringify(state) } }
+    }});
+    setSyncStatus("Sincronizado ✓ " + new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}), "ok");
+  }catch(e){
+    setSyncStatus("Falha ao enviar (offline?). Tenta 'Sincronizar agora' depois.", "err");
+  }
+}
+function schedulePush(){
+  if(!syncCfg || !syncCfg.gistId) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(pushRemote, 1500);
+}
+async function syncNow(){
+  setSyncStatus("Sincronizando…", "info");
+  await pullRemote(false);
+  await pushRemote();
+}
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "visible") pullRemote(false);
+});
+
+/* ---------- Pomodoro ---------- */
+const POMO_DUR = { foco: 25*60, pausa: 5*60 };
+let pomo = { mode:"foco", remaining: POMO_DUR.foco, running:false, timer:null };
+
+function fmt(s){
+  const m = Math.floor(s/60), ss = s%60;
+  return String(m).padStart(2,"0") + ":" + String(ss).padStart(2,"0");
+}
+function pomoRender(){
+  const el = document.getElementById("pomoTime");
+  el.textContent = fmt(pomo.remaining);
+  el.classList.toggle("running", pomo.running);
+  document.getElementById("pomoMain").textContent = pomo.running ? "Pausar" : "Iniciar";
+  document.getElementById("chipFoco").classList.toggle("on", pomo.mode==="foco");
+  document.getElementById("chipPausa").classList.toggle("on", pomo.mode==="pausa");
+  document.getElementById("pomoBtn").classList.toggle("on", pomo.running);
+  document.title = pomo.running
+    ? fmt(pomo.remaining) + (pomo.mode==="foco" ? " 🔥 FOCO" : " ☕ PAUSA") + " — CHAMAWEEK"
+    : "CHAMAWEEK 🔥";
+}
+function pomoToggleCard(){
+  document.getElementById("pomoCard").classList.toggle("hidden");
+}
+function pomoSetMode(m){
+  pomo.mode = m;
+  pomo.remaining = POMO_DUR[m];
+  pomoStop();
+  pomoRender();
+}
+function pomoStop(){
+  pomo.running = false;
+  if(pomo.timer){ clearInterval(pomo.timer); pomo.timer = null; }
+}
+function pomoStartPause(){
+  if(pomo.running){ pomoStop(); pomoRender(); return; }
+  pomo.running = true;
+  pomo.timer = setInterval(() => {
+    pomo.remaining--;
+    if(pomo.remaining <= 0){
+      pomoStop();
+      beep();
+      pomo.mode = pomo.mode === "foco" ? "pausa" : "foco";
+      pomo.remaining = POMO_DUR[pomo.mode];
+      if(pomo.mode === "pausa"){
+        pomoStartPause();
+        return;
+      }
+    }
+    pomoRender();
+  }, 1000);
+  pomoRender();
+}
+function pomoReset(){
+  pomoStop();
+  pomo.remaining = POMO_DUR[pomo.mode];
+  pomoRender();
+}
+function beep(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [880, 1108, 1318];
+    notes.forEach((f, i) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.frequency.value = f;
+      o.type = "sine";
+      g.gain.setValueAtTime(0.001, ctx.currentTime + i*0.18);
+      g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + i*0.18 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.18 + 0.16);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(ctx.currentTime + i*0.18);
+      o.stop(ctx.currentTime + i*0.18 + 0.2);
+    });
+  }catch(e){}
+}
+
+load();
+syncLoadCfg();
+render();
+syncRenderCard();
+pomoRender();
+if(syncCfg && syncCfg.gistId) pullRemote(false);
+</script>
+</body>
+</html>
