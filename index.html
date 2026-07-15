@@ -50,18 +50,17 @@
     border-radius:8px; padding:5px 9px; font-size:14px; line-height:1;}
   .btn-icon.on{border-color:var(--orange); background:rgba(255,92,26,.12);}
 
-  .meter{background:var(--card); border:1px solid var(--border); border-radius:14px;
-    padding:16px 16px 18px; margin-bottom:16px;}
-  .meter-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;}
-  .meter-label{font-size:11px; font-weight:700; letter-spacing:2px; color:var(--muted);}
-  .meter-nivel{font-family:'Anton',sans-serif; font-size:20px; letter-spacing:1px;}
-  .meter-bar{height:14px; background:var(--inset); border-radius:99px; overflow:hidden; border:1px solid var(--border);}
+  .meter{background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:10px 14px 11px; margin-bottom:14px;}
+  .meter-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:7px;}
+  .meter-label{font-size:10px; font-weight:700; letter-spacing:1.5px; color:var(--muted);}
+  .meter-right{display:flex; align-items:center; gap:8px;}
+  .meter-count{font-size:11px; font-weight:600; color:var(--muted);}
+  .meter-nivel{font-size:11px; font-weight:800; letter-spacing:.5px;}
+  .meter-bar{height:6px; background:var(--inset); border-radius:99px; overflow:hidden; border:1px solid var(--border);}
   .meter-fill{height:100%; border-radius:99px; width:0%;
     background:linear-gradient(90deg, var(--amber), var(--orange) 60%, #FF2200);
     transition:width .5s cubic-bezier(.22,1,.36,1);}
-  .meter-bottom{display:flex; justify-content:space-between; margin-top:8px;}
-  .meter-msg{font-size:12px; color:var(--muted);}
-  .meter-count{font-size:12px; font-weight:600;}
 
   /* Sync */
   .sync{background:var(--card); border:1px solid var(--border); border-radius:14px;
@@ -79,21 +78,20 @@
   .sync-status.info{color:var(--muted);}
   .sync-actions{display:flex; gap:8px; margin-top:10px;}
 
-  /* Pomodoro */
-  .pomo{background:var(--card); border:1px solid var(--border); border-radius:14px;
+  /* Cronômetro de demanda */
+  .timer{background:var(--card); border:1px solid var(--border); border-radius:14px;
     padding:14px 16px 16px; margin-bottom:16px; text-align:center;}
-  .pomo-modes{display:flex; gap:6px; justify-content:center; margin-bottom:8px;}
-  .pomo-chip{background:transparent; border:1px solid var(--border); color:var(--muted);
-    border-radius:99px; padding:4px 14px; font-size:11px; font-weight:700; letter-spacing:1px;}
-  .pomo-chip.on{border-color:var(--orange); color:var(--orange); background:rgba(255,92,26,.12);}
-  .pomo-time{font-family:'Anton',sans-serif; font-size:52px; letter-spacing:2px; line-height:1;
-    color:var(--text); margin:6px 0 12px;}
-  .pomo-time.running{color:var(--orange);}
-  .pomo-btns{display:flex; gap:8px; justify-content:center;}
-  .pomo-main{background:var(--orange); border:none; color:#140A05; border-radius:10px;
-    padding:8px 26px; font-size:14px; font-weight:700;}
-  .pomo-sec{background:transparent; border:1px solid var(--border); color:var(--muted);
+  .timer-label{font-size:11px; font-weight:700; letter-spacing:2px; color:var(--muted); margin-bottom:2px;}
+  .timer-time{font-family:'Anton',sans-serif; font-size:52px; letter-spacing:2px; line-height:1;
+    color:var(--text); margin:8px 0 12px; font-variant-numeric:tabular-nums;}
+  .timer-time.running{color:var(--orange);}
+  .timer-btns{display:flex; gap:8px; justify-content:center;}
+  .timer-main{background:var(--orange); border:none; color:#140A05; border-radius:10px;
+    padding:8px 26px; font-size:14px; font-weight:700; min-width:120px;}
+  .timer-main.running{background:#FF2200; color:#fff;}
+  .timer-sec{background:transparent; border:1px solid var(--border); color:var(--muted);
     border-radius:10px; padding:8px 14px; font-size:14px;}
+  .timer-hint{font-size:11px; color:var(--muted); margin:11px 0 0; line-height:1.4;}
 
   .tabs{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:8px;}
   .tab{padding:10px 0 8px; border-radius:10px; border:1px solid var(--border); background:var(--card);
@@ -173,7 +171,7 @@
     <div class="header-actions">
       <button class="btn-icon" id="themeBtn" onclick="toggleTheme()" title="Alternar tema claro/escuro" aria-label="Alternar tema claro e escuro">🌙</button>
       <button class="btn-icon" id="syncBtn" onclick="syncToggleCard()" title="Sincronizar entre aparelhos" aria-label="Sincronizar">☁️</button>
-      <button class="btn-icon" id="pomoBtn" onclick="pomoToggleCard()" title="Pomodoro" aria-label="Pomodoro">🍅</button>
+      <button class="btn-icon" id="timerBtn" onclick="timerToggleCard()" title="Cronômetro de demanda" aria-label="Cronômetro de demanda">⏱️</button>
       <span id="resetArea"><button class="btn-ghost" onclick="askReset()">Nova semana</button></span>
     </div>
   </div>
@@ -185,28 +183,25 @@
     <p class="sync-status info" id="syncStatus"></p>
   </div>
 
-  <div class="pomo hidden" id="pomoCard">
-    <div class="pomo-modes">
-      <button class="pomo-chip on" id="chipFoco" onclick="pomoSetMode('foco')">FOCO · 25</button>
-      <button class="pomo-chip" id="chipPausa" onclick="pomoSetMode('pausa')">PAUSA · 5</button>
+  <div class="timer hidden" id="timerCard">
+    <div class="timer-label">⏱️ TEMPO NA DEMANDA</div>
+    <div class="timer-time" id="timerTime">00:00</div>
+    <div class="timer-btns">
+      <button class="timer-main" id="timerMain" onclick="timerStartStop()">Iniciar</button>
+      <button class="timer-sec" onclick="timerReset()" title="Zerar">↺</button>
     </div>
-    <div class="pomo-time" id="pomoTime">25:00</div>
-    <div class="pomo-btns">
-      <button class="pomo-main" id="pomoMain" onclick="pomoStartPause()">Iniciar</button>
-      <button class="pomo-sec" onclick="pomoReset()" title="Zerar">↺</button>
-    </div>
+    <div class="timer-hint" id="timerHint">Toca em Iniciar quando começar a demanda e Parar quando concluir.</div>
   </div>
 
   <div class="meter">
     <div class="meter-top">
       <span class="meter-label">CONTEÚDO MEU</span>
-      <span class="meter-nivel" id="nivelNome"></span>
+      <span class="meter-right">
+        <span class="meter-count" id="meuCount"></span>
+        <span class="meter-nivel" id="nivelNome"></span>
+      </span>
     </div>
     <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
-    <div class="meter-bottom">
-      <span class="meter-msg" id="nivelMsg"></span>
-      <span class="meter-count" id="meuCount"></span>
-    </div>
   </div>
 
   <div class="tabs" id="tabs"></div>
@@ -399,7 +394,6 @@ function render(){
   nomeEl.textContent = nivel.nome;
   nomeEl.style.color = nivel.cor;
   document.getElementById("meterFill").style.width = pctMeu + "%";
-  document.getElementById("nivelMsg").textContent = nivel.msg;
   document.getElementById("meuCount").textContent = meuDone + "/" + meu.length;
 
   const hoje = new Date().getDay();
@@ -697,80 +691,84 @@ document.addEventListener("visibilitychange", () => {
   if(document.visibilityState === "visible") pullRemote(false);
 });
 
-/* ---------- Pomodoro ---------- */
-const POMO_DUR = { foco: 25*60, pausa: 5*60 };
-let pomo = { mode:"foco", remaining: POMO_DUR.foco, running:false, timer:null };
+/* ---------- Cronômetro de demanda ---------- */
+const TIMER_KEY = "chama-timer-v1";
+let dtimer = { running:false, startedAt:0, elapsed:0, tick:null };
 
-function fmt(s){
-  const m = Math.floor(s/60), ss = s%60;
-  return String(m).padStart(2,"0") + ":" + String(ss).padStart(2,"0");
-}
-function pomoRender(){
-  const el = document.getElementById("pomoTime");
-  el.textContent = fmt(pomo.remaining);
-  el.classList.toggle("running", pomo.running);
-  document.getElementById("pomoMain").textContent = pomo.running ? "Pausar" : "Iniciar";
-  document.getElementById("chipFoco").classList.toggle("on", pomo.mode==="foco");
-  document.getElementById("chipPausa").classList.toggle("on", pomo.mode==="pausa");
-  document.getElementById("pomoBtn").classList.toggle("on", pomo.running);
-  document.title = pomo.running
-    ? fmt(pomo.remaining) + (pomo.mode==="foco" ? " 🔥 FOCO" : " ☕ PAUSA") + " — CHAMAWEEK"
-    : "CHAMAWEEK 🔥";
-}
-function pomoToggleCard(){
-  document.getElementById("pomoCard").classList.toggle("hidden");
-}
-function pomoSetMode(m){
-  pomo.mode = m;
-  pomo.remaining = POMO_DUR[m];
-  pomoStop();
-  pomoRender();
-}
-function pomoStop(){
-  pomo.running = false;
-  if(pomo.timer){ clearInterval(pomo.timer); pomo.timer = null; }
-}
-function pomoStartPause(){
-  if(pomo.running){ pomoStop(); pomoRender(); return; }
-  pomo.running = true;
-  pomo.timer = setInterval(() => {
-    pomo.remaining--;
-    if(pomo.remaining <= 0){
-      pomoStop();
-      beep();
-      pomo.mode = pomo.mode === "foco" ? "pausa" : "foco";
-      pomo.remaining = POMO_DUR[pomo.mode];
-      if(pomo.mode === "pausa"){
-        pomoStartPause();
-        return;
-      }
-    }
-    pomoRender();
-  }, 1000);
-  pomoRender();
-}
-function pomoReset(){
-  pomoStop();
-  pomo.remaining = POMO_DUR[pomo.mode];
-  pomoRender();
-}
-function beep(){
+function timerLoad(){
   try{
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const notes = [880, 1108, 1318];
-    notes.forEach((f, i) => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.frequency.value = f;
-      o.type = "sine";
-      g.gain.setValueAtTime(0.001, ctx.currentTime + i*0.18);
-      g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + i*0.18 + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.18 + 0.16);
-      o.connect(g); g.connect(ctx.destination);
-      o.start(ctx.currentTime + i*0.18);
-      o.stop(ctx.currentTime + i*0.18 + 0.2);
-    });
+    const raw = localStorage.getItem(TIMER_KEY);
+    if(raw){
+      const s = JSON.parse(raw);
+      dtimer.running = !!s.running;
+      dtimer.startedAt = s.startedAt || 0;
+      dtimer.elapsed = s.elapsed || 0;
+    }
   }catch(e){}
+}
+function timerSave(){
+  try{
+    localStorage.setItem(TIMER_KEY, JSON.stringify({
+      running: dtimer.running, startedAt: dtimer.startedAt, elapsed: dtimer.elapsed
+    }));
+  }catch(e){}
+}
+function timerTotal(){
+  return dtimer.elapsed + (dtimer.running ? Date.now() - dtimer.startedAt : 0);
+}
+function fmtDur(ms){
+  let s = Math.floor(ms/1000);
+  const h = Math.floor(s/3600); s -= h*3600;
+  const m = Math.floor(s/60); s -= m*60;
+  const mm = String(m).padStart(2,"0"), ss = String(s).padStart(2,"0");
+  return h > 0 ? h + ":" + mm + ":" + ss : mm + ":" + ss;
+}
+function timerRender(){
+  const txt = fmtDur(timerTotal());
+  const el = document.getElementById("timerTime");
+  el.textContent = txt;
+  el.classList.toggle("running", dtimer.running);
+  const main = document.getElementById("timerMain");
+  main.textContent = dtimer.running ? "Parar" : (dtimer.elapsed > 0 ? "Continuar" : "Iniciar");
+  main.classList.toggle("running", dtimer.running);
+  document.getElementById("timerBtn").classList.toggle("on", dtimer.running);
+  const hint = document.getElementById("timerHint");
+  if(dtimer.running) hint.textContent = "Demanda em andamento… toca em Parar quando concluir.";
+  else if(dtimer.elapsed > 0) hint.textContent = "Levou " + txt + " nessa demanda. Zera no ↺ pra próxima.";
+  else hint.textContent = "Toca em Iniciar quando começar a demanda e Parar quando concluir.";
+  document.title = dtimer.running ? "⏱ " + txt + " — CHAMAWEEK" : "CHAMAWEEK 🔥";
+}
+function timerToggleCard(){
+  document.getElementById("timerCard").classList.toggle("hidden");
+}
+function timerStartTick(){
+  if(dtimer.tick) return;
+  dtimer.tick = setInterval(timerRender, 1000);
+}
+function timerStopTick(){
+  if(dtimer.tick){ clearInterval(dtimer.tick); dtimer.tick = null; }
+}
+function timerStartStop(){
+  if(dtimer.running){
+    dtimer.elapsed = timerTotal();
+    dtimer.running = false;
+    dtimer.startedAt = 0;
+    timerStopTick();
+  } else {
+    dtimer.startedAt = Date.now();
+    dtimer.running = true;
+    timerStartTick();
+  }
+  timerSave();
+  timerRender();
+}
+function timerReset(){
+  dtimer.running = false;
+  dtimer.startedAt = 0;
+  dtimer.elapsed = 0;
+  timerStopTick();
+  timerSave();
+  timerRender();
 }
 
 /* ---------- Tema claro/escuro ---------- */
@@ -799,7 +797,9 @@ load();
 syncLoadCfg();
 render();
 syncRenderCard();
-pomoRender();
+timerLoad();
+if(dtimer.running) timerStartTick();
+timerRender();
 if(syncCfg && syncCfg.gistId) pullRemote(false);
 </script>
 </body>
