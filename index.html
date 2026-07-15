@@ -13,13 +13,19 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%A8%3C/text%3E%3C/svg%3E" />
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
 <link rel="manifest" href="manifest.json" />
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("chama-theme-v1")||"dark");}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --bg:#0C0908; --card:#171210; --cardup:#1E1714; --border:#2A211B;
+    --bg:#0C0908; --card:#171210; --cardup:#1E1714; --border:#2A211B; --inset:#0F0C0A;
     --orange:#FF5C1A; --amber:#FFB347; --text:#F2EAE1; --muted:#93857A; --green:#7BC47F;
   }
+  :root[data-theme="light"]{
+    --bg:#F6F1EA; --card:#FFFFFF; --cardup:#F1EAE1; --border:#E5DBCF; --inset:#F0E9E0;
+    --orange:#E2490A; --amber:#B26B0E; --text:#241C15; --muted:#8B7B6D; --green:#3D9556;
+  }
+  html{background:var(--bg);}
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   body{margin:0; background:var(--bg); color:var(--text); font-family:'Archivo',sans-serif;
     padding:calc(env(safe-area-inset-top) + 24px) 16px calc(env(safe-area-inset-bottom) + 48px);}
@@ -49,7 +55,7 @@
   .meter-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;}
   .meter-label{font-size:11px; font-weight:700; letter-spacing:2px; color:var(--muted);}
   .meter-nivel{font-family:'Anton',sans-serif; font-size:20px; letter-spacing:1px;}
-  .meter-bar{height:14px; background:#0F0C0A; border-radius:99px; overflow:hidden; border:1px solid var(--border);}
+  .meter-bar{height:14px; background:var(--inset); border-radius:99px; overflow:hidden; border:1px solid var(--border);}
   .meter-fill{height:100%; border-radius:99px; width:0%;
     background:linear-gradient(90deg, var(--amber), var(--orange) 60%, #FF2200);
     transition:width .5s cubic-bezier(.22,1,.36,1);}
@@ -65,7 +71,7 @@
   .sync p{font-size:12px; color:var(--muted); margin:0 0 10px; line-height:1.5;}
   .sync p a{color:var(--amber);}
   .sync-row{display:flex; gap:8px;}
-  .sync-row input{flex:1; min-width:0; background:#0F0C0A; border:1px solid var(--border);
+  .sync-row input{flex:1; min-width:0; background:var(--inset); border:1px solid var(--border);
     border-radius:10px; padding:10px 12px; color:var(--text); font-size:16px; font-family:'Archivo',sans-serif;}
   .sync-status{font-size:12px; margin:10px 0 0;}
   .sync-status.ok{color:var(--green);}
@@ -109,7 +115,7 @@
     padding:14px 16px 16px; margin-bottom:14px;}
   .notes-card label{display:block; font-size:11px; font-weight:700; letter-spacing:2px;
     color:var(--muted); margin-bottom:8px;}
-  .notes-card textarea{width:100%; min-height:100px; background:#0F0C0A; border:1px solid var(--border);
+  .notes-card textarea{width:100%; min-height:100px; background:var(--inset); border:1px solid var(--border);
     border-radius:10px; padding:12px; color:var(--text); font-size:16px; font-family:'Archivo',sans-serif;
     resize:vertical; line-height:1.5;}
   .notes-hint{font-size:11px; color:var(--muted); margin:8px 0 0;}
@@ -165,6 +171,7 @@
   <div class="header">
     <h1>CHAMA<span>WEEK</span></h1>
     <div class="header-actions">
+      <button class="btn-icon" id="themeBtn" onclick="toggleTheme()" title="Alternar tema claro/escuro" aria-label="Alternar tema claro e escuro">🌙</button>
       <button class="btn-icon" id="syncBtn" onclick="syncToggleCard()" title="Sincronizar entre aparelhos" aria-label="Sincronizar">☁️</button>
       <button class="btn-icon" id="pomoBtn" onclick="pomoToggleCard()" title="Pomodoro" aria-label="Pomodoro">🍅</button>
       <span id="resetArea"><button class="btn-ghost" onclick="askReset()">Nova semana</button></span>
@@ -766,6 +773,28 @@ function beep(){
   }catch(e){}
 }
 
+/* ---------- Tema claro/escuro ---------- */
+const THEME_KEY = "chama-theme-v1";
+function applyTheme(mode){
+  document.documentElement.setAttribute("data-theme", mode);
+  const btn = document.getElementById("themeBtn");
+  if(btn){
+    btn.textContent = mode === "light" ? "☀️" : "🌙";
+    btn.title = mode === "light" ? "Mudar para tema escuro" : "Mudar para tema claro";
+  }
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute("content", mode === "light" ? "#F6F1EA" : "#0C0908");
+}
+function initTheme(){
+  applyTheme(document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark");
+}
+function toggleTheme(){
+  const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+  try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+  applyTheme(next);
+}
+
+initTheme();
 load();
 syncLoadCfg();
 render();
