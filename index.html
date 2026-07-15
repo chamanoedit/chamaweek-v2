@@ -149,7 +149,12 @@
   .act.raio{color:var(--amber);}
   .del{font-size:16px;}
   .dot{display:block; width:14px; height:14px; border-radius:99px; border:2px solid var(--muted);}
-  .arrow{font-size:14px; padding:5px 7px;}
+  .task.ord{cursor:grab; touch-action:none; -webkit-user-select:none; user-select:none;}
+  .task.ord:active{cursor:grabbing;}
+  .task.dragging{opacity:.97; background:var(--cardup); border-radius:8px;
+    box-shadow:0 8px 22px rgba(0,0,0,.35); position:relative; z-index:5;}
+  .grip{min-width:22px; width:22px; display:flex; align-items:center; justify-content:center;
+    color:var(--muted); font-size:15px; line-height:1;}
 
   .add{display:flex; gap:8px; margin-top:14px;}
   .add input{flex:1; min-width:0; background:var(--card); border:1px solid var(--border); border-radius:10px;
@@ -226,7 +231,7 @@
       <span class="dia" id="diaLabel"></span>
       <div class="list-head-right">
         <span class="prog" id="diaProg"></span>
-        <button class="order-btn" id="orderBtn" onclick="toggleOrder()" title="Reordenar tarefas" aria-label="Reordenar tarefas">↕</button>
+        <button class="order-btn" id="orderBtn" onclick="toggleOrder()" title="Arrastar pra reordenar" aria-label="Arrastar pra reordenar">↕</button>
       </div>
     </div>
     <div id="taskList"></div>
@@ -238,7 +243,7 @@
     <button class="add-btn" onclick="adicionar()" aria-label="Adicionar tarefa">+</button>
   </div>
 
-  <p class="legend">⚡ hoje · 🕐 amanhã · 🎯 radar · bolinha muda a cor · ↕ reordena e remove<br/><span id="legendSync">Progresso salvo neste aparelho — conecta o ☁️ pra sincronizar celular e PC.</span></p>
+  <p class="legend">⚡ hoje · 🕐 amanhã · 🎯 radar · bolinha muda a cor · ↕ arrasta pra reordenar (e remove) · concluída desce sozinha<br/><span id="legendSync">Progresso salvo neste aparelho — conecta o ☁️ pra sincronizar celular e PC.</span></p>
 </div>
 
 <script>
@@ -440,29 +445,31 @@ function render(){
       '</div>';
   } else {
     listEl.innerHTML = tarefas.map((task, i) => {
-      let acts = '';
-      if(orderMode){
-        acts += '<button class="act arrow" onclick="moveUp(' + i + ')" title="Subir" aria-label="Subir"' + (i===0?' disabled':'') + '>▲</button>';
-        acts += '<button class="act arrow" onclick="moveDown(' + i + ')" title="Descer" aria-label="Descer"' + (i===tarefas.length-1?' disabled':'') + '>▼</button>';
-        acts += '<button class="act del" onclick="remover(' + i + ')" title="Remover" aria-label="Remover">×</button>';
-      } else {
-        if(dia !== hj) acts += '<button class="act raio" onclick="moveTask(' + i + ',\'' + hj + '\')" title="Fazer hoje" aria-label="Fazer hoje">⚡</button>';
-        if(dia !== am) acts += '<button class="act" onclick="moveTask(' + i + ',\'' + am + '\')" title="Fazer amanhã" aria-label="Fazer amanhã">🕐</button>';
-        if(isInbox) acts += '<button class="act" onclick="toRadar(' + i + ')" title="Mandar pro radar" aria-label="Mandar pro radar">🎯</button>';
-        const cv0 = colorOf(task);
-        acts += '<button class="act" onclick="cycleColor(' + i + ')" title="Mudar cor" aria-label="Mudar cor">' +
-          '<span class="dot" style="' + (cv0 ? 'background:' + cv0 + '; border-color:' + cv0 + ';' : '') + '"></span></button>';
-      }
       const cv = colorOf(task);
       const rowStyle = cv
         ? ' style="border-left-color:' + cv + '; background:linear-gradient(90deg, ' + cv + '1A, transparent 55%);"'
         : '';
-      return '<div class="task' + (task.done?' done':'') + ' ' + task.type + '"' + rowStyle + '>' +
-        '<button class="check" onclick="toggle(' + i + ')" aria-label="Marcar">' + (task.done?'✓':'') + '</button>' +
+      const body =
         '<div class="task-body">' +
           '<div class="task-label">' + esc(task.label) + '</div>' +
           '<span class="task-tag ' + task.type + '">' + (task.type==="meu"?"🔥 MEU":"CLIENTE") + '</span>' +
-        '</div>' +
+        '</div>';
+      if(orderMode){
+        return '<div class="task ord' + (task.done?' done':'') + ' ' + task.type + '" data-idx="' + i + '" onpointerdown="dragStart(event)"' + rowStyle + '>' +
+          '<span class="grip" aria-hidden="true">⠿</span>' +
+          body +
+          '<div class="task-actions"><button class="act del" onclick="remover(' + i + ')" title="Remover" aria-label="Remover">×</button></div>' +
+        '</div>';
+      }
+      let acts = '';
+      if(dia !== hj) acts += '<button class="act raio" onclick="moveTask(' + i + ',\'' + hj + '\')" title="Fazer hoje" aria-label="Fazer hoje">⚡</button>';
+      if(dia !== am) acts += '<button class="act" onclick="moveTask(' + i + ',\'' + am + '\')" title="Fazer amanhã" aria-label="Fazer amanhã">🕐</button>';
+      if(isInbox) acts += '<button class="act" onclick="toRadar(' + i + ')" title="Mandar pro radar" aria-label="Mandar pro radar">🎯</button>';
+      acts += '<button class="act" onclick="cycleColor(' + i + ')" title="Mudar cor" aria-label="Mudar cor">' +
+        '<span class="dot" style="' + (cv ? 'background:' + cv + '; border-color:' + cv + ';' : '') + '"></span></button>';
+      return '<div class="task' + (task.done?' done':'') + ' ' + task.type + '" data-idx="' + i + '"' + rowStyle + '>' +
+        '<button class="check" onclick="toggle(' + i + ')" aria-label="Marcar">' + (task.done?'✓':'') + '</button>' +
+        body +
         '<div class="task-actions">' + acts + '</div>' +
       '</div>';
     }).join("");
@@ -474,18 +481,67 @@ function render(){
 
 function setDia(k){ dia = k; orderMode = false; render(); }
 function toggleOrder(){ orderMode = !orderMode; render(); }
-function toggle(i){ const l = currentList(); l[i].done = !l[i].done; save(); render(); }
-function remover(i){ currentList().splice(i,1); save(); render(); }
-function moveUp(i){
-  if(i <= 0) return;
+function toggle(i){
   const l = currentList();
-  [l[i-1], l[i]] = [l[i], l[i-1]];
+  const task = l[i];
+  task.done = !task.done;
+  l.splice(i, 1);
+  if(task.done){
+    l.push(task);                        // concluída desce pro fim
+  } else {
+    const firstDone = l.findIndex(t => t.done);
+    if(firstDone === -1) l.push(task);   // reaberta volta pro fim das pendentes
+    else l.splice(firstDone, 0, task);
+  }
   save(); render();
 }
-function moveDown(i){
-  const l = currentList();
-  if(i >= l.length-1) return;
-  [l[i+1], l[i]] = [l[i], l[i+1]];
+function remover(i){ currentList().splice(i,1); save(); render(); }
+
+/* arrastar pra reordenar — funciona no mouse e no toque (pointer events) */
+let dragRow = null;
+function dragStart(e){
+  if(e.target.closest(".act")) return;   // deixa o × de remover funcionar
+  const row = e.currentTarget;
+  dragRow = row;
+  row.classList.add("dragging");
+  try{ row.setPointerCapture(e.pointerId); }catch(_){}
+  row.addEventListener("pointermove", dragMove);
+  row.addEventListener("pointerup", dragEnd);
+  row.addEventListener("pointercancel", dragEnd);
+  e.preventDefault();
+}
+function dragAfter(container, y){
+  const els = Array.prototype.slice.call(container.querySelectorAll(".task:not(.dragging)"));
+  let best = { off: -Infinity, el: null };
+  for(const el of els){
+    const b = el.getBoundingClientRect();
+    const off = y - (b.top + b.height/2);
+    if(off < 0 && off > best.off) best = { off: off, el: el };
+  }
+  return best.el;
+}
+function dragMove(e){
+  if(!dragRow) return;
+  e.preventDefault();
+  const c = document.getElementById("taskList");
+  const after = dragAfter(c, e.clientY);
+  if(after == null) c.appendChild(dragRow);
+  else c.insertBefore(dragRow, after);
+}
+function dragEnd(e){
+  const row = e.currentTarget;
+  row.removeEventListener("pointermove", dragMove);
+  row.removeEventListener("pointerup", dragEnd);
+  row.removeEventListener("pointercancel", dragEnd);
+  row.classList.remove("dragging");
+  if(!dragRow){ return; }
+  const c = document.getElementById("taskList");
+  const order = Array.prototype.map.call(c.querySelectorAll(".task"), el => parseInt(el.dataset.idx, 10));
+  const list = currentList();
+  const next = order.map(idx => list[idx]);
+  list.length = 0;
+  Array.prototype.push.apply(list, next);
+  dragRow = null;
   save(); render();
 }
 function cycleColor(i){
