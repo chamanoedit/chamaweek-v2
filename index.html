@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>CHAMAWEEK üî•</title>
+<title>CHAMAWEEK 🔥</title>
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="CHAMAWEEK" />
@@ -78,7 +78,7 @@
   .sync-status.info{color:var(--muted);}
   .sync-actions{display:flex; gap:8px; margin-top:10px;}
 
-  /* Cron√¥metro de demanda */
+  /* Cronômetro de demanda */
   .timer{background:var(--card); border:1px solid var(--border); border-radius:14px;
     padding:14px 16px 16px; margin-bottom:16px; text-align:center;}
   .timer-label{font-size:11px; font-weight:700; letter-spacing:2px; color:var(--muted); margin-bottom:2px;}
@@ -102,7 +102,7 @@
   .tab .count{font-size:10px; font-weight:500; color:var(--muted); margin-top:2px;}
   .tab .today{position:absolute; top:4px; right:5px; width:5px; height:5px; border-radius:99px; background:var(--amber);}
 
-  /* Navega√ß√£o de listas (pills rol√°veis) */
+  /* Navegação de listas (pills roláveis) */
   .pillnav{display:flex; gap:7px; overflow-x:auto; padding:2px 2px 8px; margin-bottom:12px;
     scrollbar-width:none; -webkit-overflow-scrolling:touch;}
   .pillnav::-webkit-scrollbar{display:none;}
@@ -116,7 +116,7 @@
   .pill.active .pcount{background:rgba(255,92,26,.22); color:var(--orange);}
   .pill.thiago.active .pcount{background:rgba(255,179,71,.24); color:var(--amber);}
 
-  /* Cruzamento Thiago √ó dia */
+  /* Cruzamento Thiago × dia */
   .xref-head{padding:9px 16px; font-size:10px; font-weight:800; letter-spacing:1.5px; color:var(--amber);
     background:rgba(255,179,71,.07); border-top:1px solid var(--border); border-bottom:1px solid var(--border);}
   .task.xref{border-left-color:var(--amber);}
@@ -128,7 +128,7 @@
     color:var(--amber); font-size:14px; font-weight:800; background:rgba(255,179,71,.08); cursor:pointer;}
   .link-badge .lc{font-size:10px;}
 
-  /* Overlay de coment√°rio/links e seletor de dia */
+  /* Overlay de comentário/links e seletor de dia */
   .overlay{position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center;
     justify-content:center; padding:18px; z-index:50;}
   .overlay-card{background:var(--card); border:1px solid var(--border); border-radius:16px; width:100%;
@@ -219,33 +219,33 @@
   <div class="header">
     <h1>CHAMA<span>WEEK</span></h1>
     <div class="header-actions">
-      <button class="btn-icon" id="themeBtn" onclick="toggleTheme()" title="Alternar tema claro/escuro" aria-label="Alternar tema claro e escuro">üåô</button>
-      <button class="btn-icon" id="syncBtn" onclick="syncToggleCard()" title="Sincronizar entre aparelhos" aria-label="Sincronizar">‚òÅÔ∏è</button>
-      <button class="btn-icon" id="timerBtn" onclick="timerToggleCard()" title="Cron√¥metro de demanda" aria-label="Cron√¥metro de demanda">‚è±Ô∏è</button>
+      <button class="btn-icon" id="themeBtn" onclick="toggleTheme()" title="Alternar tema claro/escuro" aria-label="Alternar tema claro e escuro">🌙</button>
+      <button class="btn-icon" id="syncBtn" onclick="syncToggleCard()" title="Sincronizar entre aparelhos" aria-label="Sincronizar">☁️</button>
+      <button class="btn-icon" id="timerBtn" onclick="timerToggleCard()" title="Cronômetro de demanda" aria-label="Cronômetro de demanda">⏱️</button>
       <span id="resetArea"><button class="btn-ghost" onclick="askReset()">Nova semana</button></span>
     </div>
   </div>
   <p class="sub" id="subLine"></p>
 
   <div class="sync hidden" id="syncCard">
-    <label>‚òÅÔ∏è SYNC ENTRE APARELHOS</label>
+    <label>☁️ SYNC ENTRE APARELHOS</label>
     <div id="syncBody"></div>
     <p class="sync-status info" id="syncStatus"></p>
   </div>
 
   <div class="timer hidden" id="timerCard">
-    <div class="timer-label">‚è±Ô∏è TEMPO NA DEMANDA</div>
+    <div class="timer-label">⏱️ TEMPO NA DEMANDA</div>
     <div class="timer-time" id="timerTime">00:00</div>
     <div class="timer-btns">
       <button class="timer-main" id="timerMain" onclick="timerStartStop()">Iniciar</button>
-      <button class="timer-sec" onclick="timerReset()" title="Zerar">‚Ü∫</button>
+      <button class="timer-sec" onclick="timerReset()" title="Zerar">↺</button>
     </div>
-    <div class="timer-hint" id="timerHint">Toca em Iniciar quando come√ßar a demanda e Parar quando concluir.</div>
+    <div class="timer-hint" id="timerHint">Toca em Iniciar quando começar a demanda e Parar quando concluir.</div>
   </div>
 
   <div class="meter">
     <div class="meter-top">
-      <span class="meter-label">CONTE√öDO MEU</span>
+      <span class="meter-label">CONTEÚDO MEU</span>
       <span class="meter-right">
         <span class="meter-count" id="meuCount"></span>
         <span class="meter-nivel" id="nivelNome"></span>
@@ -257,17 +257,17 @@
   <div class="tabs" id="tabs"></div>
 
   <div class="pillnav" id="pillnav">
-    <button class="pill thiago" id="thiagoBar" onclick="setDia('thiago')">üê∫ THIAGO LOBOS <span class="pcount" id="thiagoCount"></span></button>
-    <button class="pill" id="inboxBar" onclick="setDia('inbox')">üì• ENTRADA <span class="pcount" id="inboxCount"></span></button>
-    <button class="pill" id="radarBar" onclick="setDia('radar')">üéØ RADAR <span class="pcount" id="radarCount"></span></button>
-    <button class="pill" id="editoresBar" onclick="setDia('editores')">‚úÇÔ∏è EDITORES <span class="pcount" id="editoresCount"></span></button>
-    <button class="pill" id="clientesBar" onclick="setDia('clientes')">üë• CLIENTES <span class="pcount" id="clientesCount"></span></button>
+    <button class="pill thiago" id="thiagoBar" onclick="setDia('thiago')">🐺 THIAGO LOBOS <span class="pcount" id="thiagoCount"></span></button>
+    <button class="pill" id="inboxBar" onclick="setDia('inbox')">📥 ENTRADA <span class="pcount" id="inboxCount"></span></button>
+    <button class="pill" id="radarBar" onclick="setDia('radar')">🎯 RADAR <span class="pcount" id="radarCount"></span></button>
+    <button class="pill" id="editoresBar" onclick="setDia('editores')">✂️ EDITORES <span class="pcount" id="editoresCount"></span></button>
+    <button class="pill" id="clientesBar" onclick="setDia('clientes')">👥 CLIENTES <span class="pcount" id="clientesCount"></span></button>
   </div>
 
   <div class="notes-card hidden" id="notesCard">
-    <label for="notesArea">OBSERVA√á√ïES DA SEMANA</label>
-    <textarea id="notesArea" placeholder="Anota aqui o que vai moldar a semana: ideias, demandas soltas, grava√ß√µes pendentes, recados de cliente‚Ä¶"></textarea>
-    <p class="notes-hint">Salva sozinho enquanto voc√™ digita.</p>
+    <label for="notesArea">OBSERVAÇÕES DA SEMANA</label>
+    <textarea id="notesArea" placeholder="Anota aqui o que vai moldar a semana: ideias, demandas soltas, gravações pendentes, recados de cliente…"></textarea>
+    <p class="notes-hint">Salva sozinho enquanto você digita.</p>
   </div>
 
   <div class="list">
@@ -279,7 +279,7 @@
     </div>
     <div id="taskList"></div>
     <div id="xrefWrap" class="hidden">
-      <div class="xref-head">üê∫ THIAGO LOBOS ¬∑ nesse dia</div>
+      <div class="xref-head">🐺 THIAGO LOBOS · nesse dia</div>
       <div id="xrefList"></div>
     </div>
   </div>
@@ -287,12 +287,12 @@
   <div class="overlay hidden" id="overlay"></div>
 
   <div class="add">
-    <input id="novoInput" placeholder="Nova tarefa‚Ä¶" onkeydown="if(event.key==='Enter')adicionar()" />
+    <input id="novoInput" placeholder="Nova tarefa…" onkeydown="if(event.key==='Enter')adicionar()" />
     <button class="type-toggle" id="typeToggle" onclick="toggleTipo()">CLIENTE</button>
     <button class="add-btn" onclick="adicionar()" aria-label="Adicionar tarefa">+</button>
   </div>
 
-  <p class="legend">‚†ø arrasta pra reordenar ¬∑ toca no nome pra renomear ¬∑ üí¨ coment√°rio/links ¬∑ bolinha muda a cor ¬∑ conclu√≠da desce sozinha<br/><span id="legendSync">Progresso salvo neste aparelho ‚Äî conecta o ‚òÅÔ∏è pra sincronizar celular e PC.</span></p>
+  <p class="legend">⠿ arrasta pra reordenar · toca no nome pra renomear · 💬 comentário/links · bolinha muda a cor · concluída desce sozinha<br/><span id="legendSync">Progresso salvo neste aparelho — conecta o ☁️ pra sincronizar celular e PC.</span></p>
 </div>
 
 <script>
@@ -305,7 +305,7 @@ const DIAS = [
   {key:"qua", label:"QUA", idx:3},
   {key:"qui", label:"QUI", idx:4},
   {key:"sex", label:"SEX", idx:5},
-  {key:"sab", label:"S√ÅB", idx:6},
+  {key:"sab", label:"SÁB", idx:6},
   {key:"dom", label:"DOM", idx:0},
 ];
 const COLORS = [
@@ -321,42 +321,42 @@ function uid(){ return Date.now().toString(36) + (_idc++).toString(36) + Math.ra
 const t = (label, type) => ({id: uid(), label, type, done:false, color:"none", note:""});
 const DEFAULT_DAYS = {
   seg:[
-    t("Bloco CHAMA ‚Äî 2h de conte√∫do pr√≥prio","meu"),
-    t("Lobos ‚Äî v√≠deo 1","cliente"),
-    t("Lobos ‚Äî v√≠deo 2","cliente"),
-    t("Lobos ‚Äî v√≠deo 3","cliente"),
-    t("David Miranda ‚Äî corte de seg","cliente"),
-    t("David Miranda ‚Äî corte de ter (adiantado)","cliente"),
+    t("Bloco CHAMA — 2h de conteúdo próprio","meu"),
+    t("Lobos — vídeo 1","cliente"),
+    t("Lobos — vídeo 2","cliente"),
+    t("Lobos — vídeo 3","cliente"),
+    t("David Miranda — corte de seg","cliente"),
+    t("David Miranda — corte de ter (adiantado)","cliente"),
   ],
   ter:[
-    t("Bloco CHAMA ‚Äî 2h de conte√∫do pr√≥prio","meu"),
-    t("Bianca Franco ‚Äî v√≠deo 1 (semana adiantada)","cliente"),
-    t("Bianca Franco ‚Äî v√≠deo 2","cliente"),
-    t("Bianca Franco ‚Äî v√≠deo 3","cliente"),
+    t("Bloco CHAMA — 2h de conteúdo próprio","meu"),
+    t("Bianca Franco — vídeo 1 (semana adiantada)","cliente"),
+    t("Bianca Franco — vídeo 2","cliente"),
+    t("Bianca Franco — vídeo 3","cliente"),
   ],
   qua:[
-    t("Bloco CHAMA ‚Äî 2h de conte√∫do pr√≥prio","meu"),
-    t("OWC ‚Äî YouTube Evangelho Sem Filtro 1","cliente"),
-    t("OWC ‚Äî YouTube Evangelho Sem Filtro 2","cliente"),
-    t("OWC ‚Äî Kids","cliente"),
-    t("David Miranda ‚Äî corte de qua","cliente"),
-    t("David Miranda ‚Äî corte de qui (adiantado)","cliente"),
+    t("Bloco CHAMA — 2h de conteúdo próprio","meu"),
+    t("OWC — YouTube Evangelho Sem Filtro 1","cliente"),
+    t("OWC — YouTube Evangelho Sem Filtro 2","cliente"),
+    t("OWC — Kids","cliente"),
+    t("David Miranda — corte de qua","cliente"),
+    t("David Miranda — corte de qui (adiantado)","cliente"),
   ],
   qui:[
-    t("Bloco CHAMA ‚Äî 2h de conte√∫do pr√≥prio","meu"),
-    t("ADBUENO ‚Äî corte 1","cliente"),
-    t("ADBUENO ‚Äî corte 2","cliente"),
-    t("ADBUENO ‚Äî corte 3","cliente"),
+    t("Bloco CHAMA — 2h de conteúdo próprio","meu"),
+    t("ADBUENO — corte 1","cliente"),
+    t("ADBUENO — corte 2","cliente"),
+    t("ADBUENO — corte 3","cliente"),
   ],
   sex:[
-    t("Bloco CHAMA ‚Äî 2h de conte√∫do pr√≥prio","meu"),
-    t("Lobos ‚Äî v√≠deo 4","cliente"),
-    t("Lobos ‚Äî v√≠deo 5","cliente"),
-    t("David Miranda ‚Äî cortes de sex/s√°b/dom (√ó3)","cliente"),
+    t("Bloco CHAMA — 2h de conteúdo próprio","meu"),
+    t("Lobos — vídeo 4","cliente"),
+    t("Lobos — vídeo 5","cliente"),
+    t("David Miranda — cortes de sex/sáb/dom (×3)","cliente"),
   ],
   sab:[
     t("Conferir postagens agendadas do fim de semana","cliente"),
-    t("Livre: gravar conte√∫do CHAMA se der vontade","meu"),
+    t("Livre: gravar conteúdo CHAMA se der vontade","meu"),
   ],
   dom:[t("Descanso + 15 min planejando a semana","meu")],
 };
@@ -424,11 +424,11 @@ function saveLocalOnly(){
 }
 
 function nivelChama(pct){
-  if(pct <= 0) return {nome:"APAGADA", cor:"var(--muted)", msg:"Nenhum conte√∫do seu ainda. Acende isso."};
-  if(pct < 34) return {nome:"ESTOPIM", cor:"var(--amber)", msg:"O estopim t√° aceso. N√£o deixa apagar."};
-  if(pct < 67) return {nome:"CHAMA", cor:"var(--orange)", msg:"T√° queimando. Mant√©m o ritmo."};
-  if(pct < 100) return {nome:"PEGANDO FOGO", cor:"#FF3D00", msg:"Quase l√°. Falta pouco."};
-  return {nome:"DINAMITE üß®", cor:"#FF2200", msg:"Semana 100% sua. √â disso que eu t√¥ falando."};
+  if(pct <= 0) return {nome:"APAGADA", cor:"var(--muted)", msg:"Nenhum conteúdo seu ainda. Acende isso."};
+  if(pct < 34) return {nome:"ESTOPIM", cor:"var(--amber)", msg:"O estopim tá aceso. Não deixa apagar."};
+  if(pct < 67) return {nome:"CHAMA", cor:"var(--orange)", msg:"Tá queimando. Mantém o ritmo."};
+  if(pct < 100) return {nome:"PEGANDO FOGO", cor:"#FF3D00", msg:"Quase lá. Falta pouco."};
+  return {nome:"DINAMITE 🧨", cor:"#FF2200", msg:"Semana 100% sua. É disso que eu tô falando."};
 }
 
 function esc(s){
@@ -483,7 +483,7 @@ function render(){
   const nivel = nivelChama(pctMeu);
 
   document.getElementById("subLine").textContent =
-    "Semana geral: " + pctTotal + "% conclu√≠da ¬∑ Clientes " + cliDone + "/" + cli.length;
+    "Semana geral: " + pctTotal + "% concluída · Clientes " + cliDone + "/" + cli.length;
   const nomeEl = document.getElementById("nivelNome");
   nomeEl.textContent = nivel.nome;
   nomeEl.style.color = nivel.cor;
@@ -553,66 +553,66 @@ function render(){
   }
 
   document.getElementById("novoInput").placeholder =
-    isInbox ? "Nova demanda que chegou‚Ä¶" : isRadar ? "Demanda da semana, sem dia‚Ä¶"
-    : isEditores ? "Demanda pra delegar‚Ä¶" : isClientes ? "Nome do cliente‚Ä¶"
-    : isThiago ? "Demanda do Thiago‚Ä¶" : "Nova tarefa‚Ä¶";
+    isInbox ? "Nova demanda que chegou…" : isRadar ? "Demanda da semana, sem dia…"
+    : isEditores ? "Demanda pra delegar…" : isClientes ? "Nome do cliente…"
+    : isThiago ? "Demanda do Thiago…" : "Nova tarefa…";
   document.getElementById("typeToggle").classList.toggle("hidden", isClientes || isThiago);
 }
 function emptyMsg(isInbox,isRadar,isEditores,isClientes,isThiago){
-  if(isInbox) return "Caixa vazia. Chegou demanda nova? Joga aqui e depois organiza pra ‚ö° hoje, üïê amanh√£ ou üéØ radar.";
-  if(isRadar) return "Radar limpo. O que precisa sair essa semana mas ainda n√£o tem dia? Deixa aqui pra n√£o perder de vista.";
-  if(isEditores) return "Nada delegado ainda. Joga aqui as demandas que v√£o pros editores.";
+  if(isInbox) return "Caixa vazia. Chegou demanda nova? Joga aqui e depois organiza pra ⚡ hoje, 🕐 amanhã ou 🎯 radar.";
+  if(isRadar) return "Radar limpo. O que precisa sair essa semana mas ainda não tem dia? Deixa aqui pra não perder de vista.";
+  if(isEditores) return "Nada delegado ainda. Joga aqui as demandas que vão pros editores.";
   if(isClientes) return "Sem clientes na lista. Adiciona os nomes abaixo.";
-  if(isThiago) return "Sem demandas do Thiago ainda. Adiciona abaixo ‚Äî depois manda pro dia com üìÖ sem sair daqui.";
+  if(isThiago) return "Sem demandas do Thiago ainda. Adiciona abaixo — depois manda pro dia com 📅 sem sair daqui.";
   return "Dia livre. Adiciona uma tarefa abaixo se precisar.";
 }
 function rowHTML(task, o){
   const id = task.id;
   const cv = colorOf(task);
   const links = extractLinks(task.note);
-  const badge = links.length ? '<span class="link-badge" onclick="openLinks(\''+id+'\')" title="Abrir links">üîó<span class="lc">'+links.length+'</span></span>' : '';
+  const badge = links.length ? '<span class="link-badge" onclick="openLinks(\''+id+'\')" title="Abrir links">🔗<span class="lc">'+links.length+'</span></span>' : '';
 
   if(o.clientes){
     return '<div class="task" data-id="'+id+'" onpointerdown="rowDown(event)">' +
-      '<span class="grip" onpointerdown="gripDown(event)" aria-label="Arrastar">‚†ø</span>' +
+      '<span class="grip" onpointerdown="gripDown(event)" aria-label="Arrastar">⠿</span>' +
       '<div class="task-body"><div class="task-label">'+esc(task.label)+'</div></div>' +
-      '<div class="task-actions"><button class="act del" onclick="remover(\''+id+'\')" title="Remover" aria-label="Remover">√ó</button></div>' +
+      '<div class="task-actions"><button class="act del" onclick="remover(\''+id+'\')" title="Remover" aria-label="Remover">×</button></div>' +
     '</div>';
   }
 
-  const tag = o.xref ? '<span class="task-tag thiago">üê∫ THIAGO</span>'
-    : '<span class="task-tag '+task.type+'">'+(task.type==="meu"?"üî• MEU":"CLIENTE")+'</span>';
+  const tag = o.xref ? '<span class="task-tag thiago">🐺 THIAGO</span>'
+    : '<span class="task-tag '+task.type+'">'+(task.type==="meu"?"🔥 MEU":"CLIENTE")+'</span>';
   const body = '<div class="task-body"><div class="task-label">'+esc(task.label)+'</div>'+tag+'</div>';
 
   if(o.xref){
     return '<div class="task xref'+(task.done?' done':'')+' cliente" data-id="'+id+'">' +
-      '<button class="check" onclick="toggle(\''+id+'\')" aria-label="Marcar">'+(task.done?'‚úì':'')+'</button>' +
+      '<button class="check" onclick="toggle(\''+id+'\')" aria-label="Marcar">'+(task.done?'✓':'')+'</button>' +
       body +
       '<div class="task-actions">' +
-        '<button class="act" onclick="openComment(\''+id+'\')" title="Coment√°rio/links" aria-label="Coment√°rio">üí¨</button>' +
-        '<button class="act" onclick="assignDay(\''+id+'\',null)" title="Tirar do dia" aria-label="Tirar do dia">‚Ü©</button>' +
+        '<button class="act" onclick="openComment(\''+id+'\')" title="Comentário/links" aria-label="Comentário">💬</button>' +
+        '<button class="act" onclick="assignDay(\''+id+'\',null)" title="Tirar do dia" aria-label="Tirar do dia">↩</button>' +
       '</div>' + badge +
     '</div>';
   }
 
   const rowStyle = cv ? ' style="border-left-color:'+cv+'; background:linear-gradient(90deg, '+cv+'1A, transparent 55%);"' : '';
-  let acts = '<button class="act" onclick="openComment(\''+id+'\')" title="Coment√°rio/links" aria-label="Coment√°rio">üí¨</button>';
+  let acts = '<button class="act" onclick="openComment(\''+id+'\')" title="Comentário/links" aria-label="Comentário">💬</button>';
   acts += '<button class="act" onclick="cycleColor(\''+id+'\')" title="Cor" aria-label="Cor"><span class="dot" style="'+(cv?'background:'+cv+'; border-color:'+cv+';':'')+'"></span></button>';
   if(o.thiago){
     if(task.day){ const lbl=(DIAS.find(d=>d.key===task.day)||{}).label; acts += '<button class="act hasday" onclick="openDayPick(\''+id+'\')" title="Mudar dia">'+lbl+'</button>'; }
-    else acts += '<button class="act" onclick="openDayPick(\''+id+'\')" title="Mandar pro dia" aria-label="Mandar pro dia">üìÖ</button>';
+    else acts += '<button class="act" onclick="openDayPick(\''+id+'\')" title="Mandar pro dia" aria-label="Mandar pro dia">📅</button>';
   } else if(o.day){
     const hj = todayKey(), am = tomorrowKey();
-    if(dia !== hj) acts += '<button class="act raio" onclick="moveTask(\''+id+'\',\''+hj+'\')" title="Fazer hoje" aria-label="Fazer hoje">‚ö°</button>';
-    if(dia !== am) acts += '<button class="act" onclick="moveTask(\''+id+'\',\''+am+'\')" title="Fazer amanh√£" aria-label="Fazer amanh√£">üïê</button>';
+    if(dia !== hj) acts += '<button class="act raio" onclick="moveTask(\''+id+'\',\''+hj+'\')" title="Fazer hoje" aria-label="Fazer hoje">⚡</button>';
+    if(dia !== am) acts += '<button class="act" onclick="moveTask(\''+id+'\',\''+am+'\')" title="Fazer amanhã" aria-label="Fazer amanhã">🕐</button>';
   } else if(o.inbox){
-    acts += '<button class="act" onclick="toRadar(\''+id+'\')" title="Pro radar" aria-label="Pro radar">üéØ</button>';
+    acts += '<button class="act" onclick="toRadar(\''+id+'\')" title="Pro radar" aria-label="Pro radar">🎯</button>';
   }
-  acts += '<button class="act del" onclick="remover(\''+id+'\')" title="Remover" aria-label="Remover">√ó</button>';
+  acts += '<button class="act del" onclick="remover(\''+id+'\')" title="Remover" aria-label="Remover">×</button>';
 
   return '<div class="task'+(task.done?' done':'')+' '+task.type+'" data-id="'+id+'" onpointerdown="rowDown(event)"'+rowStyle+'>' +
-    '<span class="grip" onpointerdown="gripDown(event)" aria-label="Arrastar">‚†ø</span>' +
-    '<button class="check" onclick="toggle(\''+id+'\')" aria-label="Marcar">'+(task.done?'‚úì':'')+'</button>' +
+    '<span class="grip" onpointerdown="gripDown(event)" aria-label="Arrastar">⠿</span>' +
+    '<button class="check" onclick="toggle(\''+id+'\')" aria-label="Marcar">'+(task.done?'✓':'')+'</button>' +
     body +
     '<div class="task-actions">'+acts+'</div>' + badge +
   '</div>';
@@ -625,13 +625,13 @@ function toggle(id){
   task.done = !task.done;
   const i = list.indexOf(task);
   list.splice(i, 1);
-  if(task.done) list.push(task);                       // conclu√≠da desce pro fim
+  if(task.done) list.push(task);                       // concluída desce pro fim
   else { const fd = list.findIndex(x => x.done); if(fd === -1) list.push(task); else list.splice(fd, 0, task); }
   save(); render();
 }
 function remover(id){ const e = findEntry(id); if(!e) return; e.list.splice(e.idx, 1); save(); render(); }
 
-/* arrastar pra reordenar ‚Äî al√ßa (‚†ø), sem segurar; toque e mouse */
+/* arrastar pra reordenar — alça (⠿), sem segurar; toque e mouse */
 let drag = null;
 function gripDown(e){
   e.stopPropagation();
@@ -720,7 +720,7 @@ function assignDay(id, dayKey){
 function toggleTipo(){
   novoTipo = novoTipo === "meu" ? "cliente" : "meu";
   const b = document.getElementById("typeToggle");
-  b.textContent = novoTipo === "meu" ? "üî• MEU" : "CLIENTE";
+  b.textContent = novoTipo === "meu" ? "🔥 MEU" : "CLIENTE";
   b.classList.toggle("meu", novoTipo === "meu");
 }
 function adicionar(){
@@ -756,7 +756,7 @@ function startEdit(row){
   input.addEventListener("pointerdown", ev => ev.stopPropagation());
   input.addEventListener("click", ev => ev.stopPropagation());
 }
-/* ---------- Coment√°rio / links da demanda ---------- */
+/* ---------- Comentário / links da demanda ---------- */
 let overlayNoteTimer = null;
 function closeOverlay(){
   const o = document.getElementById("overlay");
@@ -770,10 +770,10 @@ function openComment(id){
   o.classList.remove("hidden");
   o.innerHTML =
     '<div class="overlay-card" onclick="event.stopPropagation()">' +
-      '<h3>üí¨ Coment√°rio &amp; links</h3>' +
+      '<h3>💬 Comentário &amp; links</h3>' +
       '<p class="osub">' + esc(task.label) + '</p>' +
-      '<label>ANOTA√á√ïES E LINKS</label>' +
-      '<textarea id="cmtArea" placeholder="Escreve o que precisar e cola os links (https://‚Ä¶). Cada link vira um bot√£o pra abrir."></textarea>' +
+      '<label>ANOTAÇÕES E LINKS</label>' +
+      '<textarea id="cmtArea" placeholder="Escreve o que precisar e cola os links (https://…). Cada link vira um botão pra abrir."></textarea>' +
       '<div class="overlay-links" id="cmtLinks"></div>' +
       '<div class="overlay-actions">' +
         '<button class="btn-ghost" onclick="closeOverlay()">Fechar</button>' +
@@ -810,8 +810,8 @@ function openDayPick(id){
   const btns = DIAS.map(d => '<button class="' + (task.day===d.key?'on':'') + '" onclick="assignDay(\'' + id + '\',\'' + d.key + '\')">' + d.label + '</button>').join("");
   o.innerHTML =
     '<div class="overlay-card" onclick="event.stopPropagation()">' +
-      '<h3>üìÖ Mandar pro dia</h3>' +
-      '<p class="osub">' + esc(task.label) + ' ‚Äî aparece no dia escolhido, mas continua aqui na lista do Thiago. Marcar feito num lugar reflete no outro.</p>' +
+      '<h3>📅 Mandar pro dia</h3>' +
+      '<p class="osub">' + esc(task.label) + ' — aparece no dia escolhido, mas continua aqui na lista do Thiago. Marcar feito num lugar reflete no outro.</p>' +
       '<div class="daygrid">' + btns + '</div>' +
       '<div class="overlay-actions">' +
         (task.day ? '<button class="btn-ghost" onclick="assignDay(\'' + id + '\',null)">Tirar do dia</button>' : '') +
@@ -870,13 +870,13 @@ function syncRenderCard(){
   const body = document.getElementById("syncBody");
   document.getElementById("syncBtn").classList.toggle("on", !!syncCfg);
   document.getElementById("legendSync").textContent = syncCfg
-    ? "‚òÅÔ∏è Sync ativo ‚Äî marca num aparelho, aparece no outro."
-    : "Progresso salvo neste aparelho ‚Äî conecta o ‚òÅÔ∏è pra sincronizar celular e PC.";
+    ? "☁️ Sync ativo — marca num aparelho, aparece no outro."
+    : "Progresso salvo neste aparelho — conecta o ☁️ pra sincronizar celular e PC.";
   if(!syncCfg){
     body.innerHTML =
-      '<p>Usa tua conta do GitHub como nuvem. Cria um token em <a href="https://github.com/settings/tokens/new?scopes=gist&description=CHAMAWEEK" target="_blank" rel="noopener">github.com/settings/tokens</a> (marca s√≥ o escopo <b>gist</b>), cola aqui e conecta. Repete a conex√£o em cada aparelho com o mesmo token.</p>' +
+      '<p>Usa tua conta do GitHub como nuvem. Cria um token em <a href="https://github.com/settings/tokens/new?scopes=gist&description=CHAMAWEEK" target="_blank" rel="noopener">github.com/settings/tokens</a> (marca só o escopo <b>gist</b>), cola aqui e conecta. Repete a conexão em cada aparelho com o mesmo token.</p>' +
       '<div class="sync-row">' +
-        '<input id="tokenInput" type="password" placeholder="ghp_‚Ä¶ (token do GitHub)" autocomplete="off" />' +
+        '<input id="tokenInput" type="password" placeholder="ghp_… (token do GitHub)" autocomplete="off" />' +
         '<button class="btn-fire" onclick="syncConnect()">Conectar</button>' +
       '</div>';
   } else {
@@ -914,7 +914,7 @@ async function syncConnect(){
   const token = document.getElementById("tokenInput").value.trim();
   if(!token){ setSyncStatus("Cola o token primeiro.", "err"); return; }
   syncCfg = { token: token, gistId: null };
-  setSyncStatus("Conectando‚Ä¶", "info");
+  setSyncStatus("Conectando…", "info");
   try{
     // procura gist existente
     const gists = await gh("/gists?per_page=100");
@@ -922,23 +922,23 @@ async function syncConnect(){
     if(found){
       syncCfg.gistId = found.id;
       syncSaveCfg();
-      setSyncStatus("Gist encontrado. Puxando dados‚Ä¶", "info");
+      setSyncStatus("Gist encontrado. Puxando dados…", "info");
       await pullRemote(true);
     } else {
       const created = await gh("/gists", { method:"POST", body:{
-        description: "CHAMAWEEK ‚Äî dados do app (n√£o apagar)",
+        description: "CHAMAWEEK — dados do app (não apagar)",
         public: false,
         files: { [GIST_FILE]: { content: JSON.stringify(state) } }
       }});
       syncCfg.gistId = created.id;
       syncSaveCfg();
-      setSyncStatus("Conectado ‚úì Gist criado e dados enviados.", "ok");
+      setSyncStatus("Conectado ✓ Gist criado e dados enviados.", "ok");
     }
     syncRenderCard();
   }catch(e){
     syncCfg = null;
     syncSaveCfg();
-    setSyncStatus(e.status === 401 ? "Token inv√°lido ou sem escopo gist." : "Erro ao conectar. Tenta de novo.", "err");
+    setSyncStatus(e.status === 401 ? "Token inválido ou sem escopo gist." : "Erro ao conectar. Tenta de novo.", "err");
     syncRenderCard();
   }
 }
@@ -962,7 +962,7 @@ async function pullRemote(force){
         render();
       }
     }
-    setSyncStatus("Sincronizado ‚úì " + new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}), "ok");
+    setSyncStatus("Sincronizado ✓ " + new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}), "ok");
   }catch(e){
     setSyncStatus("Falha ao puxar dados (offline?).", "err");
   }finally{
@@ -975,7 +975,7 @@ async function pushRemote(){
     await gh("/gists/" + syncCfg.gistId, { method:"PATCH", body:{
       files: { [GIST_FILE]: { content: JSON.stringify(state) } }
     }});
-    setSyncStatus("Sincronizado ‚úì " + new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}), "ok");
+    setSyncStatus("Sincronizado ✓ " + new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}), "ok");
   }catch(e){
     setSyncStatus("Falha ao enviar (offline?). Tenta 'Sincronizar agora' depois.", "err");
   }
@@ -986,7 +986,7 @@ function schedulePush(){
   pushTimer = setTimeout(pushRemote, 1500);
 }
 async function syncNow(){
-  setSyncStatus("Sincronizando‚Ä¶", "info");
+  setSyncStatus("Sincronizando…", "info");
   await pullRemote(false);
   await pushRemote();
 }
@@ -994,7 +994,7 @@ document.addEventListener("visibilitychange", () => {
   if(document.visibilityState === "visible") pullRemote(false);
 });
 
-/* ---------- Cron√¥metro de demanda ---------- */
+/* ---------- Cronômetro de demanda ---------- */
 const TIMER_KEY = "chama-timer-v1";
 let dtimer = { running:false, startedAt:0, elapsed:0, tick:null };
 
@@ -1036,10 +1036,10 @@ function timerRender(){
   main.classList.toggle("running", dtimer.running);
   document.getElementById("timerBtn").classList.toggle("on", dtimer.running);
   const hint = document.getElementById("timerHint");
-  if(dtimer.running) hint.textContent = "Demanda em andamento‚Ä¶ toca em Parar quando concluir.";
-  else if(dtimer.elapsed > 0) hint.textContent = "Levou " + txt + " nessa demanda. Zera no ‚Ü∫ pra pr√≥xima.";
-  else hint.textContent = "Toca em Iniciar quando come√ßar a demanda e Parar quando concluir.";
-  document.title = dtimer.running ? "‚è± " + txt + " ‚Äî CHAMAWEEK" : "CHAMAWEEK üî•";
+  if(dtimer.running) hint.textContent = "Demanda em andamento… toca em Parar quando concluir.";
+  else if(dtimer.elapsed > 0) hint.textContent = "Levou " + txt + " nessa demanda. Zera no ↺ pra próxima.";
+  else hint.textContent = "Toca em Iniciar quando começar a demanda e Parar quando concluir.";
+  document.title = dtimer.running ? "⏱ " + txt + " — CHAMAWEEK" : "CHAMAWEEK 🔥";
 }
 function timerToggleCard(){
   document.getElementById("timerCard").classList.toggle("hidden");
@@ -1080,7 +1080,7 @@ function applyTheme(mode){
   document.documentElement.setAttribute("data-theme", mode);
   const btn = document.getElementById("themeBtn");
   if(btn){
-    btn.textContent = mode === "light" ? "‚òÄÔ∏è" : "üåô";
+    btn.textContent = mode === "light" ? "☀️" : "🌙";
     btn.title = mode === "light" ? "Mudar para tema escuro" : "Mudar para tema claro";
   }
   const meta = document.querySelector('meta[name="theme-color"]');
