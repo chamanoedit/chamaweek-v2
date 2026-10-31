@@ -207,6 +207,8 @@ class FFWriter:
                '-pix_fmt', 'yuv420p', '-profile:v', 'high', '-movflags', '+faststart']
         if tune:
             cmd += ['-tune', tune]
+        if os.environ.get('X264_LOWMEM'):
+            cmd += ['-x264-params', 'rc-lookahead=20:threads=3']
         cmd += [path]
         self.p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
 
