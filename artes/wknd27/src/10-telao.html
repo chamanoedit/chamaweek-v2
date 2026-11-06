@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>WKND '27 — 10 Telão</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Yellowtail&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+  :root { --ink: #FFF6EC; --logo-h: 34px; --grain: .2; }
+  .canvas { background: radial-gradient(90% 70% at 50% 45%, #FF6A24 0%, #FF4F1A 55%, #F23A16 100%); }
+  .led { position: absolute; inset: 0; pointer-events: none;
+    background-image: repeating-linear-gradient(180deg, rgba(120,20,0,.16) 0 1px, transparent 1px 4px),
+                      repeating-linear-gradient(90deg, rgba(120,20,0,.08) 0 1px, transparent 1px 4px); }
+  .small { position: absolute; font-family: 'Archivo'; font-stretch: 75%; font-weight: 800; font-size: 27px; line-height: 1.05; color: #FFF6EC; text-transform: uppercase; letter-spacing: .01em; }
+  #logos { position: absolute; left: 0; right: 0; }
+  html[data-format=story] .small { font-size: 30px; }
+  html[data-format=story] { --logo-h: 38px; }
+</style>
+</head>
+<body>
+<div class="canvas" id="c">
+  <svg class="layer" id="type"></svg>
+  <div class="small" id="small">RGNR Weekend ’27 —<br>Awaken, desperta!</div>
+  <div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div>
+  <div class="led"></div>
+</div>
+<script>
+ART.ready(async () => {
+  const { W, H, svg } = ART;
+  const s = document.getElementById('type');
+  s.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const defs = svg('defs', {}, s);
+  const f = svg('filter', { id: 'bloom', x: '-10%', y: '-30%', width: '120%', height: '160%' }, defs);
+  svg('feGaussianBlur', { in: 'SourceGraphic', stdDeviation: 9, result: 'b' }, f);
+  svg('feColorMatrix', { in: 'b', type: 'matrix', values: '1 0 0 0 0  0 .9 0 0 0  0 0 .75 0 0  0 0 0 .55 0', result: 'g' }, f);
+  const mg = svg('feMerge', {}, f); svg('feMergeNode', { in: 'g' }, mg); svg('feMergeNode', { in: 'SourceGraphic' }, mg);
+
+  const M = 66;
+  const C = { fam: 'Anton', wt: 400, k: 1, dy: 0 }, Sc = { fam: 'Yellowtail', wt: 400, k: 1.08, dy: 0.02 };
+  // linhas de letreiro: [segmentos], qual segmento fica alinhado na margem esquerda
+  const ROWS = ART.pick([
+    { size: 236, base: 384, segs: [[Sc, 'Awaken'], [C, 'SALVE ESSA'], [Sc, 'Awaken']], focus: 1 },
+    { size: 236, base: 672, segs: [[C, 'ESSA'], [C, 'DATA!'], [Sc, 'Awaken'], [C, 'SALVE']], focus: 1 },
+    { size: 206, base: 990, segs: [[C, 'FEV'], [Sc, 'Sábado'], [C, '06 FEV'], [Sc, 'Sábado']], focus: 1, center: [1, 2] },
+  ], [
+    { size: 236, base: 520, segs: [[Sc, 'Awaken'], [C, 'SALVE ESSA'], [Sc, 'Awaken']], focus: 1 },
+    { size: 236, base: 808, segs: [[C, 'ESSA'], [C, 'DATA!'], [Sc, 'Awaken'], [C, 'SALVE']], focus: 1 },
+    { size: 206, base: 1124, segs: [[C, 'FEV'], [Sc, 'Sábado'], [C, '06 FEV'], [Sc, 'Sábado']], focus: 1, center: [1, 2] },
+    { size: 166, base: 1376, segs: [[Sc, 'Awaken'], [C, 'RGNR'], [Sc, 'Weekend'], [C, '’27'], [Sc, 'Awaken']], focus: 1, center: [1, 3] },
+  ]);
+  const gapEm = 0.16;
+  ROWS.forEach(row => {
+    const g = svg('g', { filter: 'url(#bloom)', fill: '#FFF6EC' }, s);
+    let meas = row.segs.map(([F, txt]) => ART.measure(txt, `${F.wt} ${row.size * F.k}px "${F.fam}"`).width);
+    if (row.center) { // o grupo central precisa caber inteiro entre as margens
+      const [a, b] = row.center;
+      let tot = 0; for (let i = a; i <= b; i++) tot += meas[i] + (i < b ? row.size * gapEm : 0);
+      if (tot > W - 2 * M) { row.size *= (W - 2 * M) / tot; meas = row.segs.map(([F, txt]) => ART.measure(txt, `${F.wt} ${row.size * F.k}px "${F.fam}"`).width); }
+    }
+    // posição x de cada segmento, com o segmento "focus" começando na margem
+    const xs = []; let x = M;
+    if (row.center) {
+      const [a, b] = row.center;
+      let tot = 0; for (let i = a; i <= b; i++) tot += meas[i] + (i < b ? row.size * gapEm : 0);
+      x = (W - tot) / 2;
+    }
+    for (let i = row.focus; i < row.segs.length; i++) { xs[i] = x; x += meas[i] + row.size * gapEm; }
+    x = xs[row.focus];
+    for (let i = row.focus - 1; i >= 0; i--) { x -= meas[i] + row.size * gapEm; xs[i] = x; }
+    row.segs.forEach(([F, txt], i) => {
+      const t = svg('text', { x: xs[i], y: row.base + F.dy * row.size, 'font-family': F.fam, 'font-weight': F.wt, 'font-size': row.size * F.k, 'letter-spacing': F === C ? '-0.005em' : '0' }, g);
+      t.textContent = txt;
+    });
+  });
+
+  const sm = document.getElementById('small');
+  sm.style.right = M + 'px';
+  sm.style.textAlign = 'right';
+  sm.style.top = ART.pick(424, 560) + 'px';
+  document.getElementById('logos').style.top = ART.pick(1186, 1560) + 'px';
+  ART.grain(document.getElementById('c'), 0.9);
+}, ['236px Anton', '236px Yellowtail', '800 27px Archivo']);
+</script>
+</body>
+</html>

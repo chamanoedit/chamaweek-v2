@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>WKND '27 — 06 Escada</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Inter+Tight:wght@400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+  :root { --ink: #121114; --logo-h: 26px; --grain: .22; }
+  .canvas { background: #E8E6E2; }
+  .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(20,18,22,.16) 1.1px, transparent 1.4px); background-size: 6px 6px; opacity: .55; }
+  .shade { position: absolute; inset: 0; background: radial-gradient(120% 90% at 40% 40%, rgba(255,255,255,.55), rgba(255,255,255,0) 60%), linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,.06)); }
+  .face { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #111014; color: #FFFFFF; display: flex; align-items: center;
+    font-family: 'Archivo'; font-stretch: 125%; font-weight: 900; text-transform: uppercase; white-space: nowrap; line-height: 1; overflow: hidden;
+    backface-visibility: hidden; }
+  .face span { display: block; letter-spacing: -.01em; }
+  svg.poly { position: absolute; left: 0; top: 0; width: var(--W); height: var(--H); overflow: visible; }
+  .micro { position: absolute; font-family: 'Inter Tight'; font-weight: 600; font-size: 19px; line-height: 1.12; color: #18161A; letter-spacing: .01em; text-transform: uppercase; }
+  .micro b { font-weight: 800; }
+  .tl { left: 64px; } .tr { right: 64px; display: flex; gap: 48px; align-items: center; } .bl { left: 64px; }
+  .tr .line { display: inline-block; width: 70px; height: 1.5px; background: #18161A; vertical-align: middle; margin: 0 14px; }
+  .dot2 { letter-spacing: 3px; font-size: 26px; line-height: 0; }
+  #logos { justify-content: flex-start; margin-bottom: 10px; }
+  html[data-format=story] .micro { font-size: 21px; }
+</style>
+</head>
+<body>
+<div class="canvas" id="c">
+  <div class="dots"></div><div class="shade"></div>
+  <div id="stage"></div>
+  <div class="micro tl" id="tl">Salve essa data!<br><b>RGNR Weekend ’27</b></div>
+  <div class="micro tr" id="tr"><span>Sáb<span class="line"></span><b>06 Fev</b></span><span class="dot2">••</span><span class="dot2">•</span></div>
+  <div class="micro bl" id="bl"><div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div>Awaken<br>(Desperta)</div>
+</div>
+<script>
+ART.ready(async () => {
+  const { W, H, svg } = ART;
+  const q = new URLSearchParams(location.search);
+  const num = (k, d) => (q.has(k) ? parseFloat(q.get(k)) : d);
+  const P = ART.pick(
+    { yaw: -22, pitch: 24, roll: -42, dist: 9, F: 1220, ox: 0.54, oy: 0.44, lw: 7, micro: 64, bl: 1196 },
+    { yaw: -20, pitch: 26, roll: -56, dist: 9, F: 1250, ox: 0.5, oy: 0.47, lw: 7, micro: 276, bl: 1572 }
+  );
+  const yaw = num('yaw', P.yaw) * Math.PI / 180, pitch = num('pitch', P.pitch) * Math.PI / 180, roll = num('roll', P.roll) * Math.PI / 180;
+  const dist = num('dist', P.dist), F = num('F', P.F);
+  const ox = num('ox', P.ox) * W, oy = num('oy', P.oy) * H;
+
+  // degraus (de baixo para cima) — texto lido subindo, como na referência
+  const STEPS = ['Salve essa', 'Data!', 'Sábado', '06 Fev', 'RGNR', 'Weekend ’27'];
+  const N = STEPS.length, r = 1, d = num('d', 1.25), Lw = num('lw', P.lw);
+  const COLORS = ['#FFC21F', '#FF8E1A', '#FF5A1F', '#F7333A', '#E0236E', '#B81F8C'];
+
+  // centro aproximado da escada
+  const T = [Lw * 0.45, N * r * 0.36, -N * d * 0.36];
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const toCam = ([x, y, z]) => {
+    x -= T[0]; y -= T[1]; z -= T[2];
+    const x1 = cy * x + sy * z, z1 = -sy * x + cy * z;          // yaw (eixo y)
+    const y2 = cp * y - sp * z1, z2 = sp * y + cp * z1;         // pitch (eixo x)
+    return [x1, y2, z2];
+  };
+  const cr = Math.cos(roll), sr = Math.sin(roll);
+  const proj = (pw) => {
+    const [x, y, z] = toCam(pw);
+    const s = F / (dist - z);
+    const X = x * s, Y = -y * s;
+    return [ox + X * cr - Y * sr, oy + X * sr + Y * cr];
+  };
+  const rotN = ([x, y, z]) => { const x1 = cy * x + sy * z, z1 = -sy * x + cy * z; return [x1, cp * y - sp * z1, sp * y + cp * z1]; };
+
+  // cada degrau encolhe um pouco (perspectiva exagerada, como na referência)
+  const k = num('k', ART.pick(0.86, 0.86));
+  const sizes = STEPS.map((_, i) => Math.pow(k, i));
+  const faces = [], lens = [];
+  const U = 120; // px por unidade na textura do texto
+  let yAcc = 0, zAcc = 0;
+  for (let i = 0; i < N; i++) {
+    const s = sizes[i];
+    // comprimento do bloco: o texto + respiro; os dois primeiros sangram para fora da arte
+    const tw = ART.measure(STEPS[i].toUpperCase(), `900 ${0.6 * U * s}px Archivo`).width / U * 1.42;
+    const len = i < 2 ? Lw : Math.max(tw + 0.9 * s, 2.2 * s);
+    lens[i] = len;
+    const y0 = yAcc, y1 = y0 + r * s, z1 = zAcc, z0 = z1 - d * s, x0 = 0, x1 = len;
+    yAcc = y1; zAcc -= d * s;
+    const A = [x0, y0, z1], B = [x1, y0, z1], C = [x1, y1, z1], D = [x0, y1, z1];
+    const E = [x0, y0, z0], Fp = [x1, y0, z0], G = [x1, y1, z0], Hh = [x0, y1, z0];
+    faces.push({ kind: 'front', i, pts: [D, C, B, A], n: [0, 0, 1] });      // TL, TR, BR, BL
+    faces.push({ kind: 'bottom', i, pts: [A, B, Fp, E], n: [0, -1, 0] });
+    faces.push({ kind: 'top', i, pts: [D, C, G, Hh], n: [0, 1, 0] });
+    faces.push({ kind: 'left', i, pts: [E, A, D, Hh], n: [-1, 0, 0] });
+    faces.push({ kind: 'right', i, pts: [B, Fp, G, C], n: [1, 0, 0] });
+  }
+  const vis = faces.filter(f => {
+    const n = rotN(f.n);
+    const c = f.pts.map(toCam).reduce((a, p) => [a[0] + p[0] / 4, a[1] + p[1] / 4, a[2] + p[2] / 4], [0, 0, 0]);
+    f.depth = c[2];
+    return n[0] * (0 - c[0]) + n[1] * (0 - c[1]) + n[2] * (dist - c[2]) > 0;
+  }).sort((a, b) => (b.i - a.i) || (a.depth - b.depth));
+
+  const stage = document.getElementById('stage');
+  const gradFor = (svgEl, id, c1, c2, p1, p2) => {
+    const defs = svg('defs', {}, svgEl);
+    const g = svg('linearGradient', { id, gradientUnits: 'userSpaceOnUse', x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1] }, defs);
+    svg('stop', { offset: 0, 'stop-color': c1 }, g);
+    svg('stop', { offset: 1, 'stop-color': c2 }, g);
+  };
+  vis.forEach((f, k) => {
+    const P2 = f.pts.map(proj);
+    if (f.kind === 'front') {
+      const el = document.createElement('div');
+      el.className = 'face';
+      const s = sizes[f.i];
+      const w = lens[f.i] * U, h = r * s * U;
+      el.style.width = w + 'px'; el.style.height = h + 'px';
+      el.style.paddingLeft = (0.32 * U * s) + 'px';
+      el.style.fontSize = (0.6 * U * s) + 'px';
+      const sp = document.createElement('span'); sp.textContent = STEPS[f.i]; el.appendChild(sp);
+      el.style.transform = ART.quadTransform(w, h, P2);
+      stage.appendChild(el);
+    } else {
+      const s = svg('svg', { class: 'poly', viewBox: `0 0 ${W} ${H}` });
+      stage.appendChild(s);
+      let fill = '#111014';
+      if (f.kind === 'bottom' || f.kind === 'top') {
+        const c1 = COLORS[f.i], c2 = COLORS[Math.min(f.i + 1, N - 1)];
+        gradFor(s, 'g' + k, c1, c2, P2[0], P2[3]);
+        fill = `url(#g${k})`;
+      }
+      svg('polygon', { points: P2.map(p => p.map(v => v.toFixed(1)).join(',')).join(' '), fill, stroke: fill, 'stroke-width': .8, 'stroke-linejoin': 'round' }, s);
+    }
+  });
+
+  // microtipografia
+  document.getElementById('tl').style.top = P.micro + 'px';
+  document.getElementById('tr').style.top = P.micro + 'px';
+  document.getElementById('bl').style.top = P.bl + 'px';
+  ART.grain(document.getElementById('c'), 0.9);
+}, ['900 80px Archivo', '600 19px "Inter Tight"']);
+</script>
+</body>
+</html>

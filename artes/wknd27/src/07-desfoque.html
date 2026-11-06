@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>WKND '27 — 07 Desfoque</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Pinyon+Script&family=Inter+Tight:wght@400..900&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+  :root { --ink: #1B1919; --logo-h: 24px; --grain: .18; }
+  .canvas { background: radial-gradient(110% 80% at 55% 35%, #EFEDEB 0%, #E4E2DF 55%, #D9D6D3 100%); }
+  .corner { position: absolute; inset: 0; background: radial-gradient(60% 40% at 0% 100%, rgba(150,145,140,.28), rgba(150,145,140,0) 70%); }
+  .stack { position: absolute; font-family: 'Inter Tight'; font-weight: 500; font-size: 23px; line-height: .98; letter-spacing: -.01em; color: #1B1919; }
+  .stack b { font-weight: 800; }
+  #logos { position: absolute; justify-content: flex-end; }
+  .info { position: absolute; display: flex; align-items: center; gap: 22px; font-family: 'Archivo'; font-stretch: 112%; color: #1B1919; }
+  .info .l { font-size: 25px; line-height: 1.12; white-space: nowrap; }
+  .info .l b { font-weight: 800; font-size: 27px; letter-spacing: .01em; }
+  .info .l span { font-weight: 500; letter-spacing: .02em; }
+  .info .rule { flex: 1; height: 1.5px; background: #1B1919; margin-top: -26px; }
+  .pill { margin-top: -26px; border: 2px solid #1B1919; border-radius: 99px; padding: 6px 18px 5px; font-weight: 800; font-size: 23px; letter-spacing: .02em; white-space: nowrap; }
+  .foot { position: absolute; left: 0; right: 0; text-align: center; font-family: 'Archivo'; font-stretch: 112%; font-weight: 600; font-size: 16px; letter-spacing: .06em; color: #1B1919; }
+  html[data-format=story] .stack { font-size: 26px; }
+  html[data-format=story] .info .l { font-size: 27px; }
+  html[data-format=story] .info .l b { font-size: 29px; }
+  html[data-format=story] .pill { font-size: 25px; }
+  html[data-format=story] .foot { font-size: 18px; }
+  html[data-format=story] { --logo-h: 27px; }
+</style>
+</head>
+<body>
+<div class="canvas" id="c">
+  <div class="corner"></div>
+  <svg class="layer" id="type"></svg>
+  <div class="stack" id="stack">SALVE<br>ESSA<br><b>DATA!</b></div>
+  <div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div>
+  <div class="info" id="info"><div class="l"><b>SÁBADO | 06 FEV</b><br><span>TEMA: AWAKEN</span></div><div class="rule"></div><div class="pill">+ DESPERTA</div></div>
+  <div class="foot" id="foot">LEVANTA-TE, RESPLANDECE. — IS 60.1</div>
+</div>
+<script>
+ART.ready(async () => {
+  const { W, H, svg } = ART;
+  const M = ART.pick(92, 92);
+  const P = ART.pick(
+    { stack: 92, head: 452, lineGap: 0.06, width: 900, info: 0, foot: 1272 },
+    { stack: 280, head: 690, lineGap: 0.06, width: 900, info: 0, foot: 1620 }
+  );
+  const s = document.getElementById('type');
+  s.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const defs = svg('defs', {}, s);
+  const g = svg('linearGradient', { id: 'hot', gradientUnits: 'userSpaceOnUse', x1: M, y1: P.head - 100, x2: W - M, y2: P.head + 500 }, defs);
+  [[0, '#E2368F'], [.3, '#F8486A'], [.55, '#FF6A2A'], [.78, '#FF4A22'], [1, '#EE1430']].forEach(([o, c]) => svg('stop', { offset: o, 'stop-color': c }, g));
+
+  // linhas com letras misturadas (condensada + serifa itálica + script), como na referência
+  const FONTS = {
+    cond: { fam: 'Anton', wt: 400, st: 'normal', k: 1 },
+    serif: { fam: 'Playfair Display', wt: 900, st: 'normal', k: 1.04, dy: 0 },
+    script: { fam: 'Pinyon Script', wt: 400, st: 'normal', k: 1.5, dy: 0.06 },
+    italic: { fam: 'Playfair Display', wt: 800, st: 'italic', k: 1.1, dy: 0.03 },
+  };
+  const LINES = [
+    [['cond', 'R'], ['italic', 'G', { dx: 0.01 }], ['cond', 'NR'], ['script', '’27', { k: 0.62, dy: -0.38, dx: 0.04 }]],
+    [['cond', 'WE'], ['serif', 'E'], ['cond', 'KEND']],
+  ];
+  const font = (f, size, o = {}) => `${f.st} ${f.wt} ${size * (o.k || f.k)}px "${f.fam}"`;
+  const layout = (runs, size) => {
+    let x = 0; const out = [];
+    runs.forEach(([kind, txt, o = {}]) => {
+      const f = FONTS[kind], fs = size * (o.k || f.k);
+      const m = ART.measure(txt, font(f, size, o));
+      x += (o.dx || 0) * size;
+      out.push({ f, txt, fs, x, dy: (o.dy != null ? o.dy : (f.dy || 0)) * size, w: m.width });
+      x += m.width * (kind === 'cond' ? 0.985 : 0.92);
+    });
+    return { out, w: x };
+  };
+  const base = 300;
+  const L2 = layout(LINES[1], base);
+  const size = base * P.width / L2.w;                // "WEEKEND" ocupa a largura toda
+  const capH = ART.measure('W', `400 ${size}px Anton`).actualBoundingBoxAscent;
+  const y1 = P.head + capH, y2 = y1 + capH * (1 + P.lineGap) + 6;
+
+  const drawLine = (parent, runs, y, attrs) => {
+    const { out } = layout(runs, size);
+    out.forEach(r => {
+      const t = svg('text', Object.assign({ x: M + r.x, y: y + r.dy, 'font-family': r.f.fam, 'font-weight': r.f.wt, 'font-style': r.f.st, 'font-size': r.fs }, attrs), parent);
+      t.textContent = r.txt;
+    });
+  };
+  const drawAll = (parent, attrs) => { drawLine(parent, LINES[0], y1, attrs); drawLine(parent, LINES[1], y2, attrs); };
+
+  // desfoque nas pontas: cópia borrada visível nas bordas + cópia nítida no miolo
+  const blur = svg('filter', { id: 'soft', x: '-20%', y: '-40%', width: '140%', height: '180%' }, defs);
+  svg('feGaussianBlur', { stdDeviation: ART.pick(13, 15) }, blur);
+  const glow = svg('filter', { id: 'glow', x: '-20%', y: '-40%', width: '140%', height: '180%' }, defs);
+  svg('feGaussianBlur', { stdDeviation: 34 }, glow);
+  const edge = svg('linearGradient', { id: 'edge', gradientUnits: 'userSpaceOnUse', x1: M - 20, y1: 0, x2: M + P.width + 20, y2: 0 }, defs);
+  [[0, '#fff'], [.16, '#000'], [.8, '#000'], [1, '#fff']].forEach(([o, c]) => svg('stop', { offset: o, 'stop-color': c }, edge));
+  const mid = svg('linearGradient', { id: 'mid', gradientUnits: 'userSpaceOnUse', x1: M - 20, y1: 0, x2: M + P.width + 20, y2: 0 }, defs);
+  [[0, '#000'], [.15, '#fff'], [.82, '#fff'], [1, '#000']].forEach(([o, c]) => svg('stop', { offset: o, 'stop-color': c }, mid));
+  const mk = (id, grad) => { const m = svg('mask', { id, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: W, height: H }, defs); svg('rect', { width: W, height: H, fill: `url(#${grad})` }, m); };
+  mk('mEdge', 'edge'); mk('mMid', 'mid');
+
+  const gGlow = svg('g', { filter: 'url(#glow)', opacity: .35 }, s); drawAll(gGlow, { fill: '#FF4FA0' });
+  const gBlur = svg('g', { filter: 'url(#soft)', mask: 'url(#mEdge)' }, s); drawAll(gBlur, { fill: 'url(#hot)' });
+  const gSharp = svg('g', { mask: 'url(#mMid)' }, s); drawAll(gSharp, { fill: 'url(#hot)' });
+
+  // textos pequenos
+  const st = document.getElementById('stack'); st.style.left = M + 'px'; st.style.top = P.stack + 'px';
+  const lg = document.getElementById('logos'); lg.style.right = M + 'px'; lg.style.top = (P.stack + 4) + 'px';
+  const info = document.getElementById('info');
+  info.style.left = (M + 18) + 'px'; info.style.width = (P.width - 18) + 'px';
+  info.style.top = (y2 + ART.pick(40, 52)) + 'px';
+  document.getElementById('foot').style.top = P.foot + 'px';
+  ART.grain(document.getElementById('c'), 0.9);
+}, ['300px Anton', '900 300px "Playfair Display"', 'italic 800 300px "Playfair Display"', '300px "Pinyon Script"', '800 25px Archivo', '500 23px "Inter Tight"']);
+</script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>WKND '27 — 08 Jornal</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=UnifrakturMaguntia&family=IM+Fell+English:ital@0;1&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+  :root { --orange: #EE5418; --ink2: #17130F; --paper: #F0E6D2; --ink: #17130F; --logo-h: 34px; --grain: .28; }
+  .canvas { background: var(--orange); }
+  .halftone { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(120,30,0,.22) 2px, transparent 2.6px); background-size: 11px 11px; opacity: .5; }
+  .wrap { position: absolute; filter: drop-shadow(0 22px 26px rgba(60,15,0,.38)); }
+  .sheet { position: absolute; inset: 0; background: var(--paper); overflow: hidden; color: var(--ink2); }
+  .sheet.back { background: #E4DCCB; }
+  .sheet .fold { position: absolute; top: 0; bottom: 0; width: 60px; left: calc(50% - 30px);
+    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(90,60,20,.07) 45%, rgba(255,255,255,.25) 55%, rgba(0,0,0,0)); }
+  .abs { position: absolute; }
+  .rough { filter: url(#rough); }
+  .tiny { font-family: 'Old Standard TT'; font-size: 17px; letter-spacing: .14em; text-transform: uppercase; }
+  .mast { font-family: 'UnifrakturMaguntia'; line-height: 1; text-align: center; color: var(--ink2); }
+  .rule2 { border-top: 4px solid var(--ink2); border-bottom: 1.5px solid var(--ink2); height: 9px; }
+  .rule { border-top: 1.5px solid var(--ink2); }
+  .dateline { display: flex; justify-content: space-between; font-family: 'Old Standard TT'; font-weight: 700; font-size: 19px; letter-spacing: .08em; text-transform: uppercase; }
+  .head { font-family: 'Anton'; color: var(--orange); line-height: .9; text-transform: uppercase; letter-spacing: -.005em; }
+  .head .bl { font-family: 'UnifrakturMaguntia'; text-transform: none; font-size: 1.04em; letter-spacing: 0; }
+  .col { font-family: 'IM Fell English'; font-size: 18.5px; line-height: 1.26; text-align: justify; hyphens: auto; }
+  .col h4 { font-family: 'Old Standard TT'; font-weight: 700; font-size: 15px; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 6px; }
+  .col .drop { float: left; font-family: 'UnifrakturMaguntia'; font-size: 64px; line-height: .8; margin: 4px 8px 0 0; color: var(--orange); }
+  .cap { font-family: 'IM Fell English'; font-style: italic; font-size: 17px; text-align: center; }
+  .tape { position: absolute; background: var(--orange); color: var(--ink2); font-family: 'Anton'; text-transform: uppercase; line-height: 1; padding: 14px 22px 10px;
+    box-shadow: 0 3px 0 rgba(0,0,0,.08); white-space: nowrap; }
+  .tape small { font-family: 'Archivo'; font-weight: 800; font-stretch: 75%; letter-spacing: .06em; vertical-align: middle; }
+  .greek { position: absolute; background-image: repeating-linear-gradient(180deg, rgba(40,32,24,.32) 0 4px, transparent 4px 13px); }
+  #logos { justify-content: flex-start; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" xChannelSelector="R" yChannelSelector="G"/></filter>
+</svg>
+<div class="canvas" id="c">
+  <div class="halftone"></div>
+  <div class="wrap" id="backWrap"><div class="sheet back" id="back"></div></div>
+  <div class="wrap" id="paperWrap"><div class="sheet" id="paper">
+    <div class="fold"></div>
+    <div class="abs tiny" id="topL">Edição especial</div>
+    <div class="abs tiny" id="topR">Nº ’27 — Verão</div>
+    <div class="abs mast rough" id="mast">Awaken</div>
+    <div class="abs rule2" id="r1"></div>
+    <div class="abs dateline" id="dl"><span>Sábado, 06 de fevereiro de 2027</span><span>RGNR Weekend ’27</span></div>
+    <div class="abs rule" id="r2"></div>
+    <div class="abs head rough" id="head">Salve<br>essa<br><span class="bl">D</span>ata!</div>
+    <svg class="abs" id="wood"></svg>
+    <div class="abs cap" id="cap">Fig. 1 — “A noite é passada, e o dia é chegado.”</div>
+    <div class="abs col" id="col1"><h4>Isaías 60.1</h4><span class="drop">L</span>evanta-te, resplandece, porque já vem a tua luz, e a glória do Senhor vai nascendo sobre ti.</div>
+    <div class="abs rule" id="r3"></div>
+    <div class="abs col" id="col2"><h4>Romanos 13.11-12</h4>E isto digo, conhecendo o tempo, que é já hora de despertarmos do sono; porque a nossa salvação está, agora, mais perto de nós do que quando aceitamos a fé. A noite é passada, e o dia é chegado. Rejeitemos, pois, as obras das trevas e vistamo-nos das armas da luz.</div>
+    <div class="abs col" id="col3"><h4>Efésios 5.14</h4>Pelo que diz: Desperta, tu que dormes, e levanta-te dentre os mortos, e Cristo te esclarecerá.</div>
+    <svg class="abs" id="stamp"></svg>
+    <div class="abs" id="logoBox"><div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div></div>
+    <div class="tape rough" id="tape">Sábado <small>•</small> 06 Fev</div>
+    <svg class="abs" id="scribble" style="overflow:visible"></svg>
+  </div></div>
+</div>
+<script>
+ART.ready(async () => {
+  const { W, H, svg, rand, range } = ART;
+  const $ = id => document.getElementById(id);
+  const S = ART.story;
+  // papel principal (coordenadas internas) e folha de trás
+  const P = S
+    ? { x: 34, y: 150, w: 1012, h: 1560, rot: -1.4, back: { x: 70, y: 110, w: 1000, h: 1700, rot: 3.2 } }
+    : { x: 40, y: 38, w: 1000, h: 1272, rot: -1.6, back: { x: 80, y: 20, w: 990, h: 1320, rot: 2.6 } };
+  const place = (wrapId, sheetId, b) => {
+    const w = $(wrapId); Object.assign(w.style, { left: b.x + 'px', top: b.y + 'px', width: b.w + 'px', height: b.h + 'px', transform: `rotate(${b.rot}deg)` });
+    // borda rasgada
+    const pts = [], step = 14, j = 5;
+    for (let x = 0; x <= b.w; x += step) pts.push([x, range(0, j)]);
+    for (let y = 0; y <= b.h; y += step) pts.push([b.w - range(0, j), y]);
+    for (let x = b.w; x >= 0; x -= step) pts.push([x, b.h - range(0, j)]);
+    for (let y = b.h; y >= 0; y -= step) pts.push([range(0, j), y]);
+    $(sheetId).style.clipPath = `polygon(${pts.map(([a, c]) => `${a.toFixed(1)}px ${c.toFixed(1)}px`).join(',')})`;
+  };
+  place('backWrap', 'back', P.back);
+  place('paperWrap', 'paper', P);
+  // texto "fingido" na folha de trás (só textura)
+  const back = $('back');
+  [[40, 60, 280, 600], [340, 60, 280, 380], [640, 60, 300, 900], [40, 700, 560, 300]].forEach(([x, y, w, h]) => {
+    const g = document.createElement('div'); g.className = 'greek'; Object.assign(g.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: (h * (S ? 1.4 : 1)) + 'px' }); back.appendChild(g);
+  });
+
+  const L = 46, R = P.w - 46, IW = R - L;
+  const box = (id, x, y, w, h) => { const e = $(id); Object.assign(e.style, { left: x + 'px', top: y + 'px' }); if (w) e.style.width = w + 'px'; if (h) e.style.height = h + 'px'; return e; };
+  // cabeçalho
+  const G = S
+    ? { top: 92, mast: 112, mastFs: 150, r1: 274, dl: 296, r2: 334, head: 372, headFs: 250, colX: 600, wood: 372, woodH: 360, r3: 1060, low: 1088 }
+    : { top: 26, mast: 46, mastFs: 128, r1: 172, dl: 192, r2: 228, head: 258, headFs: 214, colX: 590, wood: 258, woodH: 300, r3: 862, low: 888 };
+  box('topL', L, G.top); box('topR', R - 300, G.top, 300).style.textAlign = 'right';
+  const mast = box('mast', L, G.mast, IW); mast.style.fontSize = G.mastFs + 'px';
+  box('r1', L, G.r1, IW); box('dl', L, G.dl, IW); box('r2', L, G.r2, IW);
+  const head = box('head', L - 4, G.head); head.style.fontSize = G.headFs + 'px';
+  const maxHead = G.colX - L - 24;
+  if (head.scrollWidth > maxHead) head.style.fontSize = (G.headFs * maxHead / head.scrollWidth) + 'px';
+  // ilustração em xilogravura
+  const ww = R - G.colX, wh = G.woodH;
+  const wood = box('wood', G.colX, G.wood, ww, wh);
+  wood.setAttribute('viewBox', `0 0 ${ww} ${wh}`);
+  woodcut(wood, ww, wh);
+  box('cap', G.colX, G.wood + wh + 10, ww);
+  box('col1', G.colX, G.wood + wh + 54, ww);
+  box('r3', L, G.r3, IW);
+  // parte de baixo: fita com a data, colunas, selo e logos
+  const tape = box('tape', L + 10, G.low + 18);
+  tape.style.fontSize = (S ? 92 : 74) + 'px';
+  tape.style.transform = 'rotate(-3deg)';
+  const colW = S ? 470 : 270;
+  box('col2', L, G.low + (S ? 236 : 158), colW);
+  box('col3', L + colW + 30, G.low + (S ? 236 : 158), S ? IW - colW - 30 : 250);
+  const stampR = S ? 116 : 104;
+  const st = box('stamp', R - stampR * 2 - 6, G.low + (S ? 2 : 14), stampR * 2, stampR * 2);
+  stamp(st, stampR);
+  box('logoBox', R - 260, P.h - (S ? 128 : 96));
+
+  // rabisco à mão em volta da data
+  const tb = tape.getBoundingClientRect(), pb = $('paper').getBoundingClientRect();
+  const sc = $('scribble');
+  const cx = tape.offsetLeft + tape.offsetWidth / 2, cy = tape.offsetTop + tape.offsetHeight / 2;
+  const rx = tape.offsetWidth / 2 + 34, ry = tape.offsetHeight / 2 + 26;
+  Object.assign(sc.style, { left: 0, top: 0, width: P.w + 'px', height: P.h + 'px' });
+  sc.setAttribute('viewBox', `0 0 ${P.w} ${P.h}`);
+  let d = '';
+  for (let k = 0; k < 2; k++) {
+    const a0 = range(-0.3, 0.2) + k * 0.35, n = 60;
+    for (let i = 0; i <= n; i++) {
+      const a = a0 + (i / n) * Math.PI * 2.08;
+      const jx = rx * (1 + 0.04 * Math.sin(a * 3 + k)), jy = ry * (1 + 0.06 * Math.cos(a * 2 + k));
+      const x = cx + jx * Math.cos(a) + range(-1.5, 1.5), y = cy + jy * Math.sin(a) + range(-1.5, 1.5);
+      d += (i === 0 ? ` M${x.toFixed(1)},${y.toFixed(1)}` : ` L${x.toFixed(1)},${y.toFixed(1)}`);
+    }
+  }
+  svg('path', { d, fill: 'none', stroke: '#17130F', 'stroke-width': 4.2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: .92, transform: `rotate(-3 ${cx} ${cy})` }, sc);
+
+  ART.grain($('c'), 0.85);
+
+  function woodcut(s, w, h) {
+    const ink = '#17130F';
+    svg('rect', { x: 1.5, y: 1.5, width: w - 3, height: h - 3, fill: '#F3EADA', stroke: ink, 'stroke-width': 3 }, s);
+    const hz = h * 0.6, sx = w * 0.5, sr = Math.min(w, h) * 0.2;
+    const clip = svg('clipPath', { id: 'wc' }, s); svg('rect', { x: 4, y: 4, width: w - 8, height: h - 8 }, clip);
+    const g = svg('g', { 'clip-path': 'url(#wc)' }, s);
+    // céu hachurado (mais denso no alto)
+    for (let y = 8; y < hz - 2; y += 6) {
+      const t = 1 - y / hz;
+      const sw = 0.5 + t * 2.4;
+      // falha em volta do sol
+      const dy = hz - y;
+      const gap = dy < sr * 2.4 ? Math.sqrt(Math.max(0, (sr * 2.4) ** 2 - dy * dy)) : 0;
+      if (gap > 0) {
+        svg('line', { x1: 0, y1: y, x2: sx - gap, y2: y, stroke: ink, 'stroke-width': sw }, g);
+        svg('line', { x1: sx + gap, y1: y, x2: w, y2: y, stroke: ink, 'stroke-width': sw }, g);
+      } else svg('line', { x1: 0, y1: y, x2: w, y2: y, stroke: ink, 'stroke-width': sw }, g);
+    }
+    // raios
+    for (let i = 0; i <= 26; i++) {
+      const a = Math.PI + (i / 26) * Math.PI, long = i % 2 === 0;
+      const r1 = sr * 1.25, r2 = sr * (long ? 2.3 : 1.75), da = long ? 0.035 : 0.025;
+      const p = (r, t) => `${(sx + r * Math.cos(t)).toFixed(1)},${(hz + r * Math.sin(t)).toFixed(1)}`;
+      svg('path', { d: `M${p(r1, a - da)} L${p(r2, a)} L${p(r1, a + da)} Z`, fill: ink }, g);
+    }
+    // disco do sol com linhas
+    svg('circle', { cx: sx, cy: hz, r: sr, fill: '#F3EADA', stroke: ink, 'stroke-width': 3 }, g);
+    for (let y = hz - sr + 10; y < hz; y += 9) {
+      const hw = Math.sqrt(sr * sr - (hz - y) ** 2) - 8;
+      if (hw > 6) svg('line', { x1: sx - hw, y1: y, x2: sx + hw, y2: y, stroke: ink, 'stroke-width': 1.2 }, g);
+    }
+    // mar
+    svg('rect', { x: 0, y: hz, width: w, height: h - hz, fill: '#F3EADA' }, g);
+    for (let y = hz + 6, k = 0; y < h; y += 7 + k * 0.35, k++) {
+      const t = (y - hz) / (h - hz);
+      let d = '';
+      for (let x = -10; x <= w + 10; x += 8) {
+        const yy = y + Math.sin(x / (14 + t * 10) + k * 1.7) * (1 + t * 2.2);
+        d += (x === -10 ? 'M' : ' L') + x.toFixed(1) + ',' + yy.toFixed(1);
+      }
+      const reflect = (y - hz) < (h - hz) * 0.9;
+      const pth = svg('path', { d, fill: 'none', stroke: ink, 'stroke-width': 0.8 + t * 2.4, 'stroke-dasharray': reflect ? `${(sx - sr * (1.1 - t * 0.5)).toFixed(0)} ${(sr * (2.2 - t)).toFixed(0)} 2000` : '' }, g);
+    }
+    svg('line', { x1: 0, y1: hz, x2: w, y2: hz, stroke: ink, 'stroke-width': 3 }, g);
+    // gaivotas
+    [[0.2, 0.22, 1], [0.28, 0.3, .8], [0.78, 0.18, .9]].forEach(([fx, fy, k]) => {
+      const x = w * fx, y = h * fy, s2 = 16 * k;
+      svg('path', { d: `M${x - s2},${y} q${s2 / 2},${-s2 * 0.6} ${s2},0 q${s2 / 2},${-s2 * 0.6} ${s2},0`, fill: 'none', stroke: ink, 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+    });
+  }
+  function stamp(s, r) {
+    s.setAttribute('viewBox', `0 0 ${r * 2} ${r * 2}`);
+    const c = '#EE5418';
+    const g = svg('g', { transform: `rotate(12 ${r} ${r})`, filter: 'url(#rough)' }, s);
+    svg('circle', { cx: r, cy: r, r: r - 4, fill: 'none', stroke: c, 'stroke-width': 4 }, g);
+    svg('circle', { cx: r, cy: r, r: r * 0.64, fill: 'none', stroke: c, 'stroke-width': 2.5 }, g);
+    const tr = r * 0.8;
+    svg('path', { id: 'stp', d: `M${r - tr},${r} a${tr},${tr} 0 1,1 ${tr * 2},0 a${tr},${tr} 0 1,1 ${-tr * 2},0`, fill: 'none' }, g);
+    const t = svg('text', { 'font-family': 'Archivo', 'font-weight': 800, 'font-size': r * 0.17, fill: c, 'letter-spacing': r * 0.024, style: 'font-stretch:90%' }, g);
+    const tp = svg('textPath', { href: '#stp' }, t);
+    tp.textContent = 'SALVE ESSA DATA • RGNR WEEKEND ’27 • ';
+    const m = svg('text', { x: r, y: r + r * 0.02, 'text-anchor': 'middle', 'font-family': 'Anton', 'font-size': r * 0.44, fill: c }, g);
+    m.textContent = '06';
+    const m2 = svg('text', { x: r, y: r + r * 0.32, 'text-anchor': 'middle', 'font-family': 'Archivo', 'font-weight': 800, 'font-size': r * 0.16, fill: c, 'letter-spacing': r * 0.02, style: 'font-stretch:100%' }, g);
+    m2.textContent = 'FEV';
+  }
+}, ['200px Anton', '120px UnifrakturMaguntia', '18px "IM Fell English"', 'italic 17px "IM Fell English"', '700 19px "Old Standard TT"', '800 20px Archivo']);
+</script>
+</body>
+</html>

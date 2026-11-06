@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>WKND '27 — 09 Gigante</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter+Tight:wght@400..900&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+  :root { --cream: #F3EDE3; --red: #EC3B1B; --ink: #EC3B1B; --logo-h: 20px; --grain: .16; }
+  .canvas { background: var(--cream); }
+  .tiny { position: absolute; font-family: 'Inter Tight'; font-weight: 600; font-size: 18px; line-height: 1.22; color: var(--red); letter-spacing: -.005em; }
+  .tiny b { font-weight: 800; }
+  #logos { position: absolute; }
+  html[data-format=story] .tiny { font-size: 20px; }
+  html[data-format=story] { --logo-h: 22px; }
+</style>
+</head>
+<body>
+<div class="canvas" id="c">
+  <svg class="layer" id="type"></svg>
+  <div class="tiny" id="tiny">salve essa data.<br>sábado, 06 fev.<br><b>rgnr weekend ’27.</b><br>awaken. desperta.</div>
+  <div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div>
+</div>
+<script>
+ART.ready(async () => {
+  const { W, H, svg } = ART;
+  const s = document.getElementById('type');
+  s.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const defs = svg('defs', {}, s);
+  const g = svg('linearGradient', { id: 'hot', x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+  [[0, '#F4561D'], [.55, '#EE401B'], [1, '#E2301C']].forEach(([o, c]) => svg('stop', { offset: o, 'stop-color': c }, g));
+  const cream = getComputedStyle(document.documentElement).getPropertyValue('--cream').trim();
+  const gap = ART.pick(6, 7);
+  const attrs = { fill: 'url(#hot)', stroke: cream, 'stroke-width': gap * 2, 'paint-order': 'stroke', 'stroke-linejoin': 'round' };
+  const bleed = 22, track = -0.035;
+  // mede as duas linhas para decidir o esticamento vertical que preenche a arte toda
+  const probe = (text) => { const r = ART.knockText(s, { text, family: 'Anton', fit: W + bleed * 2, x: W / 2, y: 0, anchor: 'middle', track, attrs }); r.g.remove(); return r; };
+  const p1 = probe('06'), p2 = probe('FEV');
+  const overlap = 10;
+  const sy = (H + bleed * 2 + overlap) / (p1.asc + p2.asc);
+  const top1 = -bleed;
+  const base1 = top1 + p1.asc * sy;
+  const base2 = H + bleed;
+  const l1 = ART.knockText(s, { text: '06', family: 'Anton', fit: W + bleed * 2, x: W / 2, y: base1, anchor: 'middle', track, sy, attrs });
+  const l2 = ART.knockText(s, { text: 'FEV', family: 'Anton', fit: W + bleed * 2, x: W / 2, y: base2, anchor: 'middle', track, sy, attrs });
+  // linha 2 por cima: o contorno creme dela recorta a linha 1 (o "respiro" entre as linhas)
+  s.appendChild(l2.g);
+
+  // texto miúdo e logos nos vãos do "E" (como a frase dentro do E na referência)
+  const E = l2.els[1].getBBox();
+  const cap2 = p2.asc * sy, top2 = base2 - cap2;
+  const tiny = document.getElementById('tiny');
+  const gx = E.x + E.width * 0.545;
+  tiny.style.left = gx + 'px';
+  tiny.style.top = (top2 + cap2 * 0.205) + 'px';
+  const lg = document.getElementById('logos');
+  lg.style.left = gx + 'px';
+  lg.style.top = (top2 + cap2 * 0.645) + 'px';
+  ART.grain(document.getElementById('c'), 0.8);
+}, ['400px Anton', '600 19px "Inter Tight"', '900 20px Archivo']);
+</script>
+</body>
+</html>

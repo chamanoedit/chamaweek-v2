@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>WKND '27 — 05 Granulado</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Great+Vibes&family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+  :root { --ink: #FFF8F2; --logo-h: 38px; --grain: .32; }
+  .canvas { background: #FF3A16; }
+  .row { position: absolute; left: 64px; right: 64px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+    font-family: 'Archivo'; font-stretch: 72%; font-weight: 700; font-size: 31px; letter-spacing: .01em; color: #FFF8F2; text-transform: uppercase; }
+  .row b { font-weight: 900; font-style: italic; }
+  .row > span:last-child { text-align: right; }
+  .row .crosses { letter-spacing: .7em; margin-right: -.7em; font-weight: 900; font-size: 30px; }
+  #logos { position: absolute; left: 0; right: 0; }
+  html[data-format=story] .row { font-size: 34px; }
+</style>
+</head>
+<body>
+<div class="canvas" id="c">
+  <svg class="layer" id="bg"></svg>
+  <svg class="layer" id="type"></svg>
+  <div class="row" id="row"><span>Sábado, <b>06 Fev</b></span><span class="crosses">†††</span><span><b>Awaken</b> — Desperta</span></div>
+  <div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div>
+</div>
+<script>
+ART.ready(async () => {
+  const { W, H, svg } = ART;
+  const M = 58;
+  const P = ART.pick(
+    { top: 206, sy: 1.0, gap: 46, script: 350, row: 46, logos: 140 },
+    { top: 440, sy: 1.25, gap: 54, script: 350, row: 66, logos: 176 }
+  );
+
+  // ---------- fundo: faixas verticais com difusão granulada ----------
+  const bg = document.getElementById('bg');
+  bg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const bd = svg('defs', {}, bg);
+  const base = svg('linearGradient', { id: 'base', x1: 0, y1: 0, x2: 0, y2: 1 }, bd);
+  [[0, '#F81E3C'], [.45, '#FF2E1E'], [.75, '#FF4A0E'], [1, '#FF6A0A']].forEach(([o, c]) => svg('stop', { offset: o, 'stop-color': c }, base));
+  const f = svg('filter', { id: 'spray', x: '-20%', y: '-20%', width: '140%', height: '140%', 'color-interpolation-filters': 'sRGB' }, bd);
+  svg('feGaussianBlur', { in: 'SourceGraphic', stdDeviation: 34, result: 'b' }, f);
+  svg('feTurbulence', { type: 'fractalNoise', baseFrequency: 0.92, numOctaves: 2, seed: 11, result: 'n' }, f);
+  svg('feDisplacementMap', { in: 'b', in2: 'n', scale: 130, xChannelSelector: 'R', yChannelSelector: 'G' }, f);
+  const layer = svg('g', { filter: 'url(#spray)' }, bg);
+  svg('rect', { x: -200, y: -200, width: W + 400, height: H + 400, fill: 'url(#base)' }, layer);
+  // [x, y, rx, ry, cor] em frações da arte — "chamas" verticais
+  [
+    [.0, .30, .085, .46, '#5A3AFF'], [.10, .78, .05, .30, '#7A2BFF'],
+    [.30, .02, .06, .20, '#5A46FF'], [.47, .32, .08, .52, '#FF0B32'],
+    [.20, .62, .07, .40, '#FF2E78'], [.64, .18, .035, .30, '#6C3BFF'],
+    [.72, .55, .03, .26, '#FF2A6E'], [.84, .68, .17, .50, '#FF6A00'],
+    [.60, .98, .26, .26, '#FFA020'], [.95, .22, .06, .42, '#FF1830'],
+    [.36, .92, .10, .22, '#FF7A12'], [.06, 1.02, .16, .18, '#FF8A1A'],
+  ].forEach(([x, y, rx, ry, c]) => svg('ellipse', { cx: x * W, cy: y * H, rx: rx * W, ry: ry * H, fill: c }, layer));
+
+  // ---------- tipografia ----------
+  const ty = document.getElementById('type');
+  ty.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const td = svg('defs', {}, ty);
+  const mask = svg('mask', { id: 'km', maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: W, height: H }, td);
+  svg('rect', { width: W, height: H, fill: '#000' }, mask);
+  const gap = 5;
+  const knock = { fill: '#fff', stroke: '#000', 'stroke-width': gap * 2, 'paint-order': 'stroke', 'stroke-linejoin': 'round' };
+  const l1 = ART.knockText(mask, { text: 'SALVE', family: 'Anton', fit: W - 2 * M, x: M, y: 0, track: -0.06, sy: P.sy, attrs: knock });
+  // posiciona a linha 1 pelo topo
+  const b1 = P.top + l1.asc;
+  l1.g.remove();
+  const L1 = ART.knockText(mask, { text: 'SALVE', family: 'Anton', fit: W - 2 * M, x: M, y: b1, track: -0.06, sy: P.sy, attrs: knock });
+  // "DATA!" no mesmo corpo de "SALVE", esticada na horizontal para fechar a mesma largura
+  const probe = ART.knockText(mask, { text: 'DATA!', family: 'Anton', size: L1.size, x: M, y: 0, track: -0.06, sy: P.sy, attrs: knock });
+  probe.g.remove();
+  const b2 = L1.base + P.gap + probe.asc;
+  const L2 = ART.knockText(mask, { text: 'DATA!', family: 'Anton', size: L1.size, x: M, y: b2, track: -0.06, sy: P.sy, sx: (W - 2 * M) / probe.vis, attrs: knock });
+  svg('rect', { width: W, height: H, fill: '#FFF8F2', mask: 'url(#km)' }, ty);
+  // rótulo no vão entre as linhas (como a referência bíblica do pôster)
+  const labFs = ART.pick(33, 38);
+  const lab = svg('text', { x: W - M - 4, y: (L1.base + L2.top) / 2 + labFs * 0.36, 'text-anchor': 'end', 'font-family': 'Archivo', 'font-weight': 900, 'font-style': 'italic', 'font-size': labFs, fill: '#FFF8F2', style: 'font-stretch:72%', 'letter-spacing': '0.01em' }, ty);
+  lab.textContent = 'RGNR WEEKEND ’27';
+
+  // script por cima
+  const junction = (L1.base + L2.top) / 2;
+  const sx = W * ART.pick(0.4, 0.37);
+  const sc = svg('text', { x: sx, y: junction + P.script * 0.16, 'text-anchor': 'middle', 'font-family': 'Great Vibes', 'font-size': P.script,
+    fill: '#FFF8F2', stroke: '#FF3A1C', 'stroke-width': 15, 'paint-order': 'stroke', 'stroke-linejoin': 'round',
+    transform: `rotate(-10 ${sx} ${junction})` }, ty);
+  sc.textContent = 'Essa';
+
+  document.getElementById('row').style.top = (L2.base + P.row) + 'px';
+  document.getElementById('logos').style.top = (L2.base + P.logos) + 'px';
+  ART.grain(document.getElementById('c'), 0.95);
+}, ['400px Anton', '300px "Great Vibes"', 'italic 900 34px Archivo', '700 31px Archivo']);
+</script>
+</body>
+</html>
