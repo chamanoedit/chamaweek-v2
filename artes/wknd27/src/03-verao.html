@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>WKND '27 — 03 Verão</title>
+<link href="https://fonts.googleapis.com/css2?family=Shrikhand&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+  :root { --paper: #F8E8CF; --paper2: #F2D8B0; --yellow: #FFC23D; --tang: #F99A2C; --orange: #EE6A2A; --red: #D33F29; --maroon: #7A2120;
+    --ink: #FFF1DE; --logo-h: 46px; --grain: .3; }
+  .canvas { background: var(--paper); }
+  #logos { position: absolute; left: 0; right: 0; }
+</style>
+</head>
+<body>
+<div class="canvas" id="c">
+  <svg class="layer" id="scene"></svg>
+  <div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div>
+</div>
+<script>
+ART.ready(async () => {
+  const { W, H, svg, range } = ART;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const C = { paper: css('--paper'), paper2: css('--paper2'), y: css('--yellow'), t: css('--tang'), o: css('--orange'), r: css('--red'), m: css('--maroon') };
+  const P = ART.pick(
+    { titleY: 262, titleW: 800, sub: 318, cx: 540, cy: 778, R: 362, waves: 1168, logos: 1262 },
+    { titleY: 500, titleW: 860, sub: 562, cx: 540, cy: 1064, R: 396, waves: 1536, logos: 1650 }
+  );
+  const s = document.getElementById('scene');
+  s.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const defs = svg('defs', {}, s);
+  const { cx, cy, R } = P;
+
+  // raios de sol (sunburst) a partir do centro do selo
+  const burst = svg('g', {}, s);
+  const N = 40, L = 2400;
+  for (let i = 0; i < N; i += 2) {
+    const a0 = (i / N) * Math.PI * 2 - Math.PI / 2, a1 = ((i + 1) / N) * Math.PI * 2 - Math.PI / 2;
+    burst.appendChild(svg('path', { d: `M${cx},${cy} L${cx + L * Math.cos(a0)},${cy + L * Math.sin(a0)} L${cx + L * Math.cos(a1)},${cy + L * Math.sin(a1)} Z`, fill: C.paper2 }));
+  }
+  const fade = svg('radialGradient', { id: 'fade', cx, cy, r: H * 0.7, gradientUnits: 'userSpaceOnUse' }, defs);
+  svg('stop', { offset: .3, 'stop-color': C.paper, 'stop-opacity': 0 }, fade);
+  svg('stop', { offset: 1, 'stop-color': C.paper, 'stop-opacity': .85 }, fade);
+  svg('rect', { width: W, height: H, fill: 'url(#fade)' }, s);
+
+  // título AWAKEN com sombra em degraus (efeito anos 70)
+  const tg = svg('g', {}, s);
+  const mk = (fill, dx, dy, extra = {}) => {
+    const t = svg('text', Object.assign({ x: W / 2 + dx, y: P.titleY + dy, 'text-anchor': 'middle', 'font-family': 'Shrikhand', 'font-size': 180, fill }, extra), tg);
+    t.textContent = 'Awaken';
+    return t;
+  };
+  const front = mk(C.y, 0, 0);
+  ART.fitWidth(front, P.titleW);
+  const fs = parseFloat(front.getAttribute('font-size'));
+  tg.removeChild(front);
+  const step = fs * 0.034;
+  [[C.m, 4], [C.r, 3], [C.o, 2], [C.t, 1]].forEach(([c, k]) => mk(c, step * k, step * k, { 'font-size': fs, stroke: c, 'stroke-width': step * .9, 'stroke-linejoin': 'round' }));
+  mk(C.y, 0, 0, { 'font-size': fs, stroke: C.m, 'stroke-width': fs * 0.018, 'paint-order': 'stroke', 'stroke-linejoin': 'round' });
+
+  const sub = svg('text', { x: W / 2, y: P.sub + step * 4, 'text-anchor': 'middle', 'font-family': 'Archivo', 'font-weight': 800, 'font-stretch': '125%', 'font-size': ART.pick(24, 28), 'letter-spacing': '.5em', fill: C.m }, s);
+  sub.textContent = '✦  DESPERTA  ✦';
+  sub.setAttribute('style', 'font-stretch:125%');
+
+  // selo do sol
+  const ring = (r, fill) => svg('circle', { cx, cy, r, fill }, s);
+  ring(R + 14, C.paper);
+  ring(R, C.m);
+  ring(R - 18, C.paper);
+  ring(R - 28, C.o);
+  const inner = R - 112;
+  ring(inner + 10, C.paper);
+  const sg = svg('radialGradient', { id: 'sun', cx: .5, cy: .38, r: .7 }, defs);
+  svg('stop', { offset: 0, 'stop-color': '#FFE07A' }, sg);
+  svg('stop', { offset: 1, 'stop-color': C.y }, sg);
+  ring(inner, 'url(#sun)');
+  // listras horizontais na parte de baixo do sol (sol retrô)
+  const clip = svg('clipPath', { id: 'disc' }, defs);
+  svg('circle', { cx, cy, r: inner }, clip);
+  const stripes = svg('g', { 'clip-path': 'url(#disc)', fill: C.t }, s);
+  let yy = cy + inner * 0.67, h = 4;
+  while (yy < cy + inner) { svg('rect', { x: cx - inner, y: yy, width: inner * 2, height: h }, stripes); yy += h + 11 - h * 0.5; h += 2.6; }
+
+  // texto em arco
+  const band = [R - 28, inner + 10];
+  const mid = (band[0] + band[1]) / 2;
+  const arcFs = ART.pick(40, 44);
+  const cap = ART.capTop('SALVE', `800 ${arcFs}px Archivo`).ascent;
+  const rTop = mid - cap / 2, rBot = mid + cap / 2;
+  svg('path', { id: 'arcTop', d: `M${cx - rTop},${cy} A${rTop},${rTop} 0 0 1 ${cx + rTop},${cy}`, fill: 'none' }, defs);
+  svg('path', { id: 'arcBot', d: `M${cx - rBot},${cy} A${rBot},${rBot} 0 0 0 ${cx + rBot},${cy}`, fill: 'none' }, defs);
+  const arcText = (id, txt, ls) => {
+    const t = svg('text', { 'font-family': 'Archivo', 'font-weight': 800, 'font-size': arcFs, fill: '#FFF3E0', 'letter-spacing': ls, style: 'font-stretch:118%' }, s);
+    const tp = svg('textPath', { href: '#' + id, startOffset: '50%', 'text-anchor': 'middle' }, t);
+    tp.textContent = txt;
+  };
+  arcText('arcTop', 'SALVE ESSA DATA!', '.16em');
+  arcText('arcBot', 'RGNR WEEKEND ’27', '.16em');
+  // estrelinhas nas laterais do anel
+  [-1, 1].forEach(sx => {
+    const st = svg('text', { x: cx + sx * mid, y: cy + arcFs * 0.36, 'text-anchor': 'middle', 'font-size': arcFs * 0.9, fill: '#FFF3E0', 'font-family': 'Archivo' }, s);
+    st.textContent = '✦';
+  });
+
+  // data no centro do sol
+  const dtxt = (txt, y, size, extra = {}) => {
+    const t = svg('text', Object.assign({ x: cx, y, 'text-anchor': 'middle', fill: C.m, 'font-size': size }, extra), s);
+    t.textContent = txt;
+    return t;
+  };
+  const k = inner / 250;
+  dtxt('SÁBADO', cy - 126 * k, 34 * k, { 'font-family': 'Archivo', 'font-weight': 800, 'letter-spacing': '.3em', style: 'font-stretch:125%', dx: 0 });
+  dtxt('06', cy + 52 * k, 232 * k, { 'font-family': 'Fraunces', 'font-weight': 900, style: "font-variation-settings:'SOFT' 100,'WONK' 0,'opsz' 144", 'letter-spacing': '-.02em' });
+  dtxt('FEV', cy + 148 * k, 88 * k, { 'font-family': 'Fraunces', 'font-weight': 900, style: "font-variation-settings:'SOFT' 100,'WONK' 0,'opsz' 144", 'letter-spacing': '.04em' });
+
+  // ondas retrô embaixo
+  const wave = (y0, amp, len, fill) => {
+    let d = `M0,${y0}`;
+    for (let x = 0; x <= W + len; x += len) d += ` q${len / 4},${-amp} ${len / 2},0 t${len / 2},0`;
+    d += ` L${W + len},${H} L0,${H} Z`;
+    svg('path', { d, fill }, s);
+  };
+  wave(P.waves, 16, 180, C.t);
+  wave(P.waves + 26, 16, 180, C.o);
+  wave(P.waves + 52, 16, 180, C.r);
+  wave(P.waves + 78, 16, 180, C.m);
+  document.getElementById('logos').style.top = P.logos + 'px';
+
+  ART.grain(document.getElementById('c'), 0.8);
+}, ['180px Shrikhand', '900 100px Fraunces', '800 40px Archivo']);
+</script>
+</body>
+</html>

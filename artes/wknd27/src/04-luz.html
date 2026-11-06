@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>WKND '27 — 04 Luz</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@100..900&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+  :root { --brown: #4B190C; --rust: #8C3417; --ink: #4B190C; --logo-h: 44px; --grain: .22; }
+  .canvas { background: linear-gradient(180deg, #E9C3D2 0%, #F6CDBE 24%, #FFD9B6 46%, #FFC99B 66%, #F9AE8C 84%, #EE9A86 100%); }
+  .t { position: absolute; left: 0; right: 0; text-align: center; color: var(--brown); }
+  .kicker { font-family: 'Inter Tight'; font-weight: 700; font-size: 27px; letter-spacing: .48em; }
+  .kicker span { margin-right: -.48em; }
+  .title { font-family: 'Instrument Serif'; font-style: italic; font-weight: 400; line-height: .8; letter-spacing: -.012em; }
+  .title span { display: inline-block; padding: 0 .08em; background: linear-gradient(180deg, #5A1E0C 10%, #7A2C12 60%, #9A3A16 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { font-family: 'Inter Tight'; font-weight: 600; font-size: 24px; letter-spacing: .6em; color: var(--rust); }
+  .sub span { margin-right: -.6em; }
+  .date { display: flex; align-items: center; justify-content: center; gap: 34px; font-family: 'Instrument Serif'; font-size: 82px; line-height: 1; letter-spacing: .02em; }
+  .date i { display: block; width: 2px; height: 64px; background: var(--brown); opacity: .55; }
+  .event { font-family: 'Instrument Serif'; font-size: 50px; line-height: 1; }
+  .event em { font-style: italic; }
+  .verse { font-family: 'Instrument Serif'; font-style: italic; font-size: 27px; color: var(--rust); }
+  .verse b { font-family: 'Inter Tight'; font-style: normal; font-weight: 600; font-size: 17px; letter-spacing: .3em; margin-left: 12px; }
+  #logos { position: absolute; left: 0; right: 0; }
+  html[data-format=story] .kicker { font-size: 30px; }
+  html[data-format=story] .date { font-size: 92px; }
+  html[data-format=story] .event { font-size: 56px; }
+  html[data-format=story] .verse { font-size: 30px; }
+  html[data-format=story] { --logo-h: 48px; }
+</style>
+</head>
+<body>
+<div class="canvas" id="c">
+  <svg class="layer" id="scene"></svg>
+  <div class="t kicker" id="kicker"><span>SALVE ESSA DATA!</span></div>
+  <div class="t title" id="title"><span>Awaken</span></div>
+  <div class="t sub" id="sub"><span>DESPERTA</span></div>
+  <div class="t date" id="date"><span>SÁBADO</span><i></i><span>06 FEV</span></div>
+  <div class="t event" id="event">RGNR <em>Weekend</em> ’27</div>
+  <div class="t verse" id="verse">“Desperta, tu que dormes…” <b>EF 5.14</b></div>
+  <div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div>
+</div>
+<script>
+ART.ready(async () => {
+  const { W, H, svg, rand, range } = ART;
+  const P = ART.pick(
+    { kicker: 96, sunY: 470, title: 300, titleW: 820, sub: 566, date: 760, event: 900, verse: 1010, hills: 1060, logos: 1236 },
+    { kicker: 292, sunY: 742, title: 568, titleW: 860, sub: 846, date: 1090, event: 1244, verse: 1366, hills: 1440, logos: 1626 }
+  );
+  const $ = id => document.getElementById(id);
+  const s = $('scene');
+  s.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const defs = svg('defs', {}, s);
+  const blur = (id, sd) => { const f = svg('filter', { id, x: '-50%', y: '-50%', width: '200%', height: '200%' }, defs); svg('feGaussianBlur', { stdDeviation: sd }, f); };
+  blur('b120', 120); blur('b60', 60); blur('b24', 24); blur('b6', 6); blur('b2', 2);
+
+  // vazamentos de luz quentes nos cantos
+  const leaks = svg('g', { filter: 'url(#b120)' }, s);
+  [[-80, H * .12, 300, '#FF8456', .6], [W + 60, H * .3, 320, '#FF7350', .5], [W * .15, H * .95, 380, '#F0687A', .5], [W + 40, H * .9, 300, '#FF8A58', .45], [W * .5, -120, 360, '#D79AC8', .5]]
+    .forEach(([x, y, r, c, o]) => svg('circle', { cx: x, cy: y, r, fill: c, opacity: o }, leaks));
+
+  // raios suaves (god rays)
+  const rays = svg('g', { filter: 'url(#b24)', fill: '#FFFDF6' }, s);
+  for (let i = 0; i < 9; i++) {
+    const a = range(0, Math.PI * 2), w = range(.03, .08), R = H * 1.1;
+    const p = t => `${W / 2 + R * Math.cos(t)},${P.sunY + R * Math.sin(t)}`;
+    svg('path', { d: `M${W / 2},${P.sunY} L${p(a - w)} L${p(a + w)} Z`, opacity: range(.2, .42).toFixed(2) }, rays);
+  }
+
+  // brilho do sol
+  const bloom = svg('radialGradient', { id: 'bloom', cx: W / 2, cy: P.sunY, r: W * .78, gradientUnits: 'userSpaceOnUse' }, defs);
+  [[0, '#FFFFFF', 1], [.12, '#FFFCF2', 1], [.26, '#FFF1D2', .9], [.45, '#FFE0B0', .55], [.7, '#FFD0A0', .18], [1, '#FFC898', 0]]
+    .forEach(([o, c, a]) => svg('stop', { offset: o, 'stop-color': c, 'stop-opacity': a }, bloom));
+  svg('rect', { width: W, height: H, fill: 'url(#bloom)' }, s);
+  svg('circle', { cx: W / 2, cy: P.sunY, r: 260, fill: '#FFFBF0', opacity: .75, filter: 'url(#b60)' }, s);
+  svg('circle', { cx: W / 2, cy: P.sunY, r: 165, fill: '#FFFFFF', filter: 'url(#b24)' }, s);
+  svg('circle', { cx: W / 2, cy: P.sunY, r: 300, fill: 'none', stroke: '#FFFFFF', 'stroke-width': 3, opacity: .35, filter: 'url(#b2)' }, s);
+  svg('circle', { cx: W / 2, cy: P.sunY, r: 420, fill: 'none', stroke: '#FFF4DE', 'stroke-width': 2, opacity: .25, filter: 'url(#b2)' }, s);
+
+  // colinas com névoa
+  const hills = [
+    { y: P.hills, amp: 46, c1: '#FBC3A6', c2: '#F6B095', ph: .6 },
+    { y: P.hills + 70, amp: 58, c1: '#F4A891', c2: '#EC9784', ph: 2.1 },
+    { y: P.hills + 150, amp: 50, c1: '#E99083', c2: '#DE7F7B', ph: 4.0 },
+  ];
+  hills.forEach((h, i) => {
+    const g = svg('linearGradient', { id: 'h' + i, x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+    svg('stop', { offset: 0, 'stop-color': h.c1 }, g);
+    svg('stop', { offset: 1, 'stop-color': h.c2 }, g);
+    let d = `M0,${H} L0,${h.y}`;
+    for (let x = 0; x <= W; x += 20) {
+      const y = h.y - h.amp * (0.55 * Math.sin(x / 260 + h.ph) + 0.3 * Math.sin(x / 120 + h.ph * 2) + 0.15 * Math.sin(x / 61 + h.ph));
+      d += ` L${x},${y.toFixed(1)}`;
+    }
+    d += ` L${W},${H} Z`;
+    svg('path', { d, fill: `url(#h${i})`, opacity: .95 }, s);
+    // névoa sobre cada camada
+    svg('rect', { x: 0, y: h.y - h.amp - 20, width: W, height: 120, fill: '#FFE3C8', opacity: .22, filter: 'url(#b24)' }, s);
+  });
+
+  // partículas de luz
+  const dust = svg('g', {}, s);
+  for (let i = 0; i < 70; i++) {
+    const ang = range(0, Math.PI * 2), dist = Math.pow(rand(), .8) * W * .75;
+    const x = W / 2 + Math.cos(ang) * dist * 1.1, y = P.sunY + Math.sin(ang) * dist * 1.3;
+    const r = range(1.2, i % 9 === 0 ? 14 : 4.5);
+    svg('circle', { cx: x, cy: y, r, fill: '#FFFDF4', opacity: range(.25, .85).toFixed(2), filter: r > 6 ? 'url(#b6)' : (r > 3 ? 'url(#b2)' : '') }, dust);
+  }
+
+  // textos
+  $('kicker').style.top = P.kicker + 'px';
+  const title = $('title');
+  title.style.fontSize = '320px';
+  ART.fitWidth(title.querySelector('span'), P.titleW);
+  title.style.fontSize = title.querySelector('span').style.fontSize; title.querySelector('span').style.fontSize = '';
+  title.style.top = P.title + 'px';
+  $('sub').style.top = P.sub + 'px';
+  $('date').style.top = P.date + 'px';
+  $('event').style.top = P.event + 'px';
+  $('verse').style.top = P.verse + 'px';
+  $('logos').style.top = P.logos + 'px';
+
+  ART.grain($('c'), 0.75);
+}, ['italic 300px "Instrument Serif"', '82px "Instrument Serif"', '700 25px "Inter Tight"', '900 40px Archivo']);
+</script>
+</body>
+</html>

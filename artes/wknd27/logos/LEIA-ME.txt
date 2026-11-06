@@ -1,0 +1,8 @@
+Coloque aqui os logos oficiais e rode `node render.js` de novo:
+
+  rgnr.svg  (ou rgnr.png / rgnr.webp)
+  ipda.svg  (ou ipda.png / ipda.webp)
+
+PNG precisa ter fundo transparente. Por padrão o logo é recolorido na cor de cada arte
+(creme nas escuras, marrom/vinho nas claras). Para manter as cores originais do logo,
+crie um arquivo vazio chamado `manter-cores` nesta pasta.

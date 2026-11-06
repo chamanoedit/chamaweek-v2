@@ -1,0 +1,22 @@
+/* Base comum das 4 artes — WKND '27 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: var(--W); height: var(--H); overflow: hidden; background: #000; }
+body { -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+
+.canvas { position: relative; width: var(--W); height: var(--H); overflow: hidden; }
+.layer { position: absolute; inset: 0; }
+svg.layer { width: var(--W); height: var(--H); display: block; }
+
+/* Grão de filme por cima de tudo */
+svg.grain { position: absolute; inset: 0; width: var(--W); height: var(--H); pointer-events: none;
+  mix-blend-mode: overlay; opacity: var(--grain, .28); }
+
+/* Logos (placeholder tipográfico até entrar o arquivo oficial em /logos) */
+.logos { display: flex; align-items: center; justify-content: center; gap: calc(var(--logo-h) * .7); }
+.logo { height: var(--logo-h); display: flex; align-items: center; color: var(--ink); }
+.logo.ph { font-family: 'Archivo', sans-serif; font-weight: 900; font-stretch: 125%;
+  font-size: calc(var(--logo-h) * .8); letter-spacing: .01em; line-height: 1; }
+.logo .img { display: block; height: 100%; background: var(--ink);
+  -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat; }
+.logo .img.color { background: var(--src) center / contain no-repeat; -webkit-mask: none; mask: none; }
+.logos .sep { width: 2px; height: calc(var(--logo-h) * .9); background: var(--ink); opacity: .45; }

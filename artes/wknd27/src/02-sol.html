@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>WKND '27 — 02 Sol</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@100..900&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+  :root { --bg: #F4561C; --band: #A8250F; --ink: #2A0C05; --cream: #FFEEDB; --sun1: #FFE98C; --sun2: #FFB637;
+    --M: 72px; --logo-h: 46px; --grain: .2; }
+  .canvas { background: var(--bg); font-family: 'Inter Tight', sans-serif; }
+  .abs { position: absolute; left: var(--M); right: var(--M); }
+  .head { color: var(--ink); font-weight: 900; letter-spacing: -.03em; word-spacing: .14em; line-height: .86; white-space: nowrap; }
+  .head span { display: inline-block; }
+  .rule { height: 3px; background: var(--ink); }
+  .labels { display: flex; justify-content: space-between; color: var(--ink); font-weight: 700; font-size: 23px; letter-spacing: .3em; }
+  .labels b { font-weight: 900; }
+  .bottom { color: var(--cream); }
+  .daterow { display: flex; align-items: flex-end; justify-content: space-between; }
+  .fev { font-weight: 900; letter-spacing: -.045em; line-height: .74; display: inline-block; }
+  .side { text-align: right; padding-bottom: 2px; }
+  .sab { font-weight: 850; font-size: 66px; letter-spacing: -.01em; line-height: .74; }
+  .sabsub { margin-top: 16px; font-weight: 600; font-size: 22px; letter-spacing: .28em; opacity: .75; margin-right: -.28em; }
+  .rule2 { height: 2px; background: var(--cream); opacity: .45; }
+  .event { font-weight: 850; letter-spacing: -.02em; word-spacing: .08em; line-height: 1; white-space: nowrap; }
+  .event em { font-style: normal; color: var(--sun1); }
+  #logos { justify-content: flex-start; --ink: var(--cream); }
+</style>
+</head>
+<body>
+<div class="canvas" id="c">
+  <svg class="layer" id="scene"></svg>
+  <div class="abs head" id="head"></div>
+  <div class="abs rule" id="rule"></div>
+  <div class="abs labels" id="labels"><span><b>AWAKEN</b></span><span>DESPERTA</span></div>
+  <div class="abs bottom" id="bottom">
+    <div class="daterow">
+      <span class="fev" id="fev">FEV</span>
+      <div class="side"><div class="sab">SÁBADO</div></div>
+    </div>
+  </div>
+  <div class="abs rule2" id="rule2"></div>
+  <div class="abs bottom event" id="event">RGNR Weekend <em>’27</em></div>
+  <div class="abs logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div>
+</div>
+<script>
+ART.ready(async () => {
+  const { W, H, svg } = ART;
+  const M = 72, inner = W - 2 * M;
+  const P = ART.pick(
+    { head: 72, headLines: ['SALVE ESSA DATA!'], rule: 168, labels: 192, heroTop: 262, digitH: 452, fev: 790, rule2: 1098, event: 1128, eventFs: 70, logos: 1240, fevW: .6 },
+    { head: 262, headLines: ['SALVE ESSA', 'DATA!'], rule: 552, labels: 578, heroTop: 668, digitH: 486, fev: 1214, rule2: 1488, event: 1518, eventFs: 76, logos: 1636, fevW: .54 }
+  );
+  const $ = id => document.getElementById(id);
+
+  // título
+  const head = $('head');
+  head.style.top = P.head + 'px';
+  P.headLines.forEach((l, i) => { const sp = document.createElement('span'); sp.textContent = l; head.appendChild(sp); if (i < P.headLines.length - 1) head.appendChild(document.createElement('br')); });
+  head.style.fontSize = '100px';
+  ART.fitWidth(head.querySelector('span'), inner);
+  head.style.fontSize = head.querySelector('span').style.fontSize;
+  head.querySelectorAll('span').forEach(s => s.style.fontSize = '');
+  $('rule').style.top = P.rule + 'px';
+  $('labels').style.top = P.labels + 'px';
+
+  // herói: sol = "0", depois o "6"
+  const s = $('scene');
+  s.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const defs = svg('defs', {}, s);
+  let Hd = P.digitH, fs, m6, D, gap = 26;
+  for (let i = 0; i < 4; i++) {
+    const one = ART.capTop('6', `900 100px "Inter Tight"`);
+    fs = Hd / one.ascent * 100;
+    m6 = ART.capTop('6', `900 ${fs}px "Inter Tight"`);
+    D = Hd / 0.84;
+    const total = D + gap + m6.left + m6.right;
+    if (total <= inner) break;
+    Hd *= inner / total;
+  }
+  const hz = P.heroTop + Hd;
+  const cx = M + D / 2, cy = hz - 0.84 * D + D / 2;
+
+  // anéis de luz
+  svg('clipPath', { id: 'above' }, defs).appendChild(svg('rect', { x: 0, y: 0, width: W, height: hz }));
+  const rings = svg('g', { 'clip-path': 'url(#above)', fill: 'none', stroke: '#FFD27A' }, s);
+  [[1, .55], [2, .38], [3, .25], [4, .15], [5, .08]].forEach(([k, o]) =>
+    svg('circle', { cx, cy, r: D / 2 + k * 30, 'stroke-width': 3, opacity: o }, rings));
+
+  const g = svg('linearGradient', { id: 'sun', x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+  svg('stop', { offset: 0, 'stop-color': getComputedStyle(document.documentElement).getPropertyValue('--sun1') }, g);
+  svg('stop', { offset: 1, 'stop-color': getComputedStyle(document.documentElement).getPropertyValue('--sun2') }, g);
+  svg('circle', { cx, cy, r: D / 2, fill: 'url(#sun)' }, s);
+
+  const six = svg('text', { x: 0, y: hz, 'font-family': 'Inter Tight', 'font-weight': 900, 'font-size': fs, fill: getComputedStyle(document.documentElement).getPropertyValue('--ink') }, s);
+  six.textContent = '6';
+  const sixLeft = W - M - m6.right;
+  six.setAttribute('x', Math.max(sixLeft, M + D + gap + m6.left));
+
+  // faixa (terra/mar) abaixo do horizonte
+  svg('rect', { x: 0, y: hz, width: W, height: H - hz, fill: getComputedStyle(document.documentElement).getPropertyValue('--band') }, s);
+  // reflexo do sol em listras finas
+  const refl = svg('g', { fill: '#FFC24A' }, s);
+  [[10, .9, 7], [30, .7, 5], [54, .5, 4], [82, .32, 3]].forEach(([dy, wf, h]) =>
+    svg('rect', { x: cx - D * wf / 2, y: hz + dy, width: D * wf, height: h, rx: h / 2, opacity: .9 }, refl));
+
+  // parte de baixo
+  const bottom = $('bottom');
+  const fev = $('fev');
+  fev.style.fontSize = '300px';
+  ART.fitWidth(fev, inner * P.fevW);
+  bottom.style.top = (hz + 128) + 'px';
+  $('rule2').style.top = P.rule2 + 'px';
+  const ev = $('event');
+  ev.style.top = P.event + 'px';
+  ev.style.fontSize = P.eventFs + 'px';
+  if (ev.scrollWidth > inner) ev.style.fontSize = P.eventFs * inner / ev.scrollWidth + 'px';
+  $('logos').style.top = P.logos + 'px';
+
+  ART.grain($('c'), 0.9);
+}, ['900 100px "Inter Tight"', '800 60px "Inter Tight"', '900 40px Archivo']);
+</script>
+</body>
+</html>

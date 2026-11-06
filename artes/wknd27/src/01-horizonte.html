@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>WKND '27 — 01 Horizonte</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+  :root { --ink: #FFF1E2; --logo-h: 48px; --grain: .24; }
+  .kicker { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 30px;
+    font-family: 'Archivo'; font-weight: 800; font-stretch: 125%; font-size: 31px; letter-spacing: .32em; color: #FFE7D4; }
+  .kicker span { margin-right: -.32em; }
+  .kicker i { display: block; width: 84px; height: 2px; background: linear-gradient(90deg, rgba(255,215,176,0), #FFD7B0); }
+  .kicker i:last-child { transform: scaleX(-1); }
+  .info { position: absolute; left: 0; right: 0; text-align: center; color: #FFF4E8; }
+  .date { display: inline-block; font-family: 'Archivo'; font-weight: 800; font-stretch: 110%; font-size: 88px; letter-spacing: .03em; line-height: 1;
+    text-shadow: 0 4px 30px rgba(20, 6, 30, .45); }
+  .date .dash { display: inline-block; width: .42em; height: .085em; background: #FFC36B; vertical-align: middle; margin: 0 .3em; transform: translateY(-.05em); border-radius: 2px; }
+  .event { margin-top: 30px; font-family: 'Archivo'; font-weight: 600; font-stretch: 125%; font-size: 30px; letter-spacing: .42em; color: #FFC979; }
+  .event span { margin-right: -.42em; }
+  #logos { position: absolute; left: 0; right: 0; }
+  html[data-format=story] .kicker { font-size: 36px; }
+  html[data-format=story] .date { font-size: 96px; }
+  html[data-format=story] .event { font-size: 32px; margin-top: 34px; }
+  html[data-format=story] { --logo-h: 52px; }
+</style>
+</head>
+<body>
+<div class="canvas" id="c">
+  <svg class="layer" id="scene"></svg>
+  <div class="kicker" id="kicker"><i></i><span>SALVE ESSA DATA!</span><i></i></div>
+  <div class="info" id="info">
+    <div class="date" id="date">SÁBADO<span class="dash"></span>06 FEV</div>
+    <div class="event"><span>RGNR WEEKEND ’27</span></div>
+  </div>
+  <div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div>
+</div>
+<script>
+ART.ready(async () => {
+  const { W, H, svg, rand, range } = ART;
+  const P = ART.pick(
+    { horizon: 790, titleW: 944, sunR: 178, kicker: 88, info: 1052, logos: 1238 },
+    { horizon: 1110, titleW: 960, sunR: 206, kicker: 296, info: 1402, logos: 1622 }
+  );
+  const hz = P.horizon;
+  const s = document.getElementById('scene');
+  s.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const defs = svg('defs', {}, s);
+  const grad = (tag, id, attrs, stops) => {
+    const g = svg(tag, Object.assign({ id }, attrs), defs);
+    stops.forEach(([o, c, a = 1]) => svg('stop', { offset: o, 'stop-color': c, 'stop-opacity': a }, g));
+    return g;
+  };
+
+  // --- título (medido primeiro para posicionar o sol) ---
+  const title = svg('text', { x: W / 2, y: hz, 'text-anchor': 'middle', 'font-family': 'Anton', 'font-size': 300, 'letter-spacing': 6 }, s);
+  title.textContent = 'AWAKEN';
+  ART.fitWidth(title, P.titleW);
+  const fs = parseFloat(title.getAttribute('font-size'));
+  const cap = ART.capTop('AWAKEN', `${fs}px Anton`).ascent;
+  const sunY = hz - cap * 0.9;
+  s.removeChild(title);
+
+  // --- céu ---
+  grad('linearGradient', 'sky', { x1: 0, y1: 0, x2: 0, y2: 1 }, [
+    [0, '#090620'], [.2, '#170F42'], [.4, '#3A1764'], [.58, '#7E2672'], [.72, '#C9405F'], [.84, '#F46E45'], [.94, '#FFA654'], [1, '#FFCB7E']]);
+  svg('rect', { x: 0, y: 0, width: W, height: hz + 2, fill: 'url(#sky)' }, s);
+
+  // estrelas sumindo com o amanhecer
+  const stars = svg('g', {}, s);
+  for (let i = 0; i < 110; i++) {
+    const y = Math.pow(rand(), 1.4) * hz * 0.55, x = range(0, W);
+    const o = (1 - y / (hz * 0.55)) * range(.2, .95);
+    svg('circle', { cx: x.toFixed(1), cy: y.toFixed(1), r: range(.5, 1.6).toFixed(2), fill: '#FFF6E8', opacity: o.toFixed(3) }, stars);
+  }
+
+  // raios de luz
+  svg('clipPath', { id: 'above' }, defs).appendChild(svg('rect', { x: 0, y: 0, width: W, height: hz }));
+  grad('radialGradient', 'rayg', { cx: W / 2, cy: sunY, r: H * 0.62, gradientUnits: 'userSpaceOnUse' }, [[0, '#FFE9C6', .42], [.35, '#FFC68E', .14], [.75, '#FFB070', .03], [1, '#FFB070', 0]]);
+  const rays = svg('g', { 'clip-path': 'url(#above)', style: 'mix-blend-mode:screen' }, s);
+  let a = Math.PI * 1.02;
+  while (a < Math.PI * 1.98) {
+    const w = range(.006, .028), R = H * 1.2;
+    const p = (t) => `${(W / 2 + R * Math.cos(t)).toFixed(1)},${(sunY + R * Math.sin(t)).toFixed(1)}`;
+    svg('path', { d: `M${W / 2},${sunY} L${p(a - w)} L${p(a + w)} Z`, fill: 'url(#rayg)', opacity: range(.35, 1).toFixed(2) }, rays);
+    a += w * 2 + range(.05, .14);
+  }
+
+  // brilho geral do amanhecer
+  grad('radialGradient', 'glow', { cx: W / 2, cy: sunY, r: W * 0.98, gradientUnits: 'userSpaceOnUse' }, [
+    [0, '#FFF6DE', 1], [.1, '#FFDFA2', .95], [.28, '#FFA463', .6], [.52, '#EC5A69', .25], [1, '#7E2672', 0]]);
+  svg('rect', { x: 0, y: 0, width: W, height: hz, fill: 'url(#glow)', style: 'mix-blend-mode:screen' }, s);
+
+  // nuvens finas (estratos) iluminadas por baixo
+  const cb = svg('filter', { id: 'cblur', x: '-20%', y: '-200%', width: '140%', height: '500%' }, defs);
+  svg('feGaussianBlur', { stdDeviation: '9 3.5' }, cb);
+  const clouds = svg('g', { filter: 'url(#cblur)' }, s);
+  const strata = [
+    [sunY - 330, .30, 520, 9, '#C97AA6', .45], [sunY - 300, .74, 380, 7, '#B26A9E', .4],
+    [sunY - 236, .18, 300, 6, '#F29A9C', .5], [sunY - 212, .62, 640, 10, '#FFB08E', .55],
+    [sunY - 150, .86, 330, 7, '#FFC39A', .6], [sunY - 122, .38, 420, 6, '#FFD2A2', .55],
+    [sunY + 70, .12, 360, 6, '#FFC891', .5], [sunY + 96, .88, 400, 7, '#FFBE8A', .5],
+  ];
+  if (ART.story) strata.push([sunY - 470, .22, 560, 10, '#9C5C98', .35], [sunY - 420, .8, 420, 8, '#A9649C', .35], [sunY - 560, .5, 380, 7, '#7E4C8C', .3]);
+  strata.forEach(([y, xf, w, h, c, o]) => {
+    for (let k = 0; k < 4; k++) {
+      svg('ellipse', { cx: W * xf + range(-w * .3, w * .3), cy: y + range(-h * 1.4, h * 1.4), rx: w / 2 * range(.35, .8), ry: h * range(.5, 1.1), fill: c, opacity: (o * range(.45, .9)).toFixed(2) }, clouds);
+    }
+  });
+
+  // sol
+  const sf = svg('filter', { id: 'sunblur', x: '-50%', y: '-50%', width: '200%', height: '200%' }, defs);
+  svg('feGaussianBlur', { stdDeviation: 26 }, sf);
+  svg('circle', { cx: W / 2, cy: sunY, r: P.sunR * 1.28, fill: '#FFE3A6', opacity: .55, filter: 'url(#sunblur)' }, s);
+  grad('radialGradient', 'sunfill', {}, [[0, '#FFFEF6'], [.55, '#FFF1C6'], [.85, '#FFD789'], [1, '#FFC062']]);
+  svg('circle', { cx: W / 2, cy: sunY, r: P.sunR, fill: 'url(#sunfill)' }, s);
+
+  // letras em silhueta, contraluz
+  grad('linearGradient', 'letter', { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, '#3C1748'], [.5, '#200C33'], [1, '#12071F']]);
+  const rim = svg('filter', { id: 'rim', x: '-10%', y: '-30%', width: '120%', height: '160%' }, defs);
+  svg('feMorphology', { in: 'SourceAlpha', operator: 'dilate', radius: 1.5, result: 'd' }, rim);
+  svg('feGaussianBlur', { in: 'd', stdDeviation: 12, result: 'b' }, rim);
+  svg('feFlood', { 'flood-color': '#FFB36E', 'flood-opacity': .85 }, rim);
+  svg('feComposite', { in2: 'b', operator: 'in', result: 'g' }, rim);
+  const mg = svg('feMerge', {}, rim);
+  svg('feMergeNode', { in: 'g' }, mg); svg('feMergeNode', { in: 'SourceGraphic' }, mg);
+  title.setAttribute('fill', 'url(#letter)');
+  title.setAttribute('filter', 'url(#rim)');
+  s.appendChild(title);
+
+  // mar
+  grad('linearGradient', 'sea', { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, '#7A3467'], [.12, '#4E2257'], [.4, '#28123F'], [1, '#0B0619']]);
+  svg('rect', { x: 0, y: hz, width: W, height: H - hz, fill: 'url(#sea)' }, s);
+  grad('radialGradient', 'seaglow', { cx: W / 2, cy: hz, r: W * 0.62, gradientUnits: 'userSpaceOnUse', gradientTransform: `translate(0 ${hz}) scale(1 .42) translate(0 ${-hz})` }, [
+    [0, '#FFC77E', .75], [.35, '#F0785A', .35], [1, '#7A3467', 0]]);
+  svg('rect', { x: 0, y: hz, width: W, height: H - hz, fill: 'url(#seaglow)', style: 'mix-blend-mode:screen' }, s);
+
+  // reflexo das letras com ondulação
+  const rp = svg('filter', { id: 'ripple', x: '-5%', y: '-5%', width: '110%', height: '110%' }, defs);
+  svg('feTurbulence', { type: 'fractalNoise', baseFrequency: '0.008 0.075', numOctaves: 1, seed: 4, result: 'n' }, rp);
+  svg('feDisplacementMap', { in: 'SourceGraphic', in2: 'n', scale: 22, xChannelSelector: 'R', yChannelSelector: 'G', result: 'dm' }, rp);
+  svg('feGaussianBlur', { in: 'dm', stdDeviation: '2.2 0.8' }, rp);
+  grad('linearGradient', 'rfade', { x1: 0, y1: hz, x2: 0, y2: hz + cap * 1.05, gradientUnits: 'userSpaceOnUse' }, [[0, '#fff', .75], [.6, '#fff', .25], [1, '#fff', 0]]);
+  svg('mask', { id: 'rmask', maskUnits: 'userSpaceOnUse', x: 0, y: hz, width: W, height: H - hz }, defs)
+    .appendChild(svg('rect', { x: 0, y: hz, width: W, height: H - hz, fill: 'url(#rfade)' }));
+  const rg = svg('g', { mask: 'url(#rmask)', filter: 'url(#ripple)' }, s);
+  const refl = title.cloneNode(true);
+  refl.removeAttribute('filter');
+  refl.setAttribute('fill', '#14081F');
+  refl.setAttribute('transform', `translate(0 ${2 * hz}) scale(1 -1)`);
+  rg.appendChild(refl);
+
+  // brilho do sol na água
+  const gl = svg('g', { style: 'mix-blend-mode:screen' }, s);
+  for (let i = 0; i < 210; i++) {
+    const t = Math.pow(rand(), 1.25);
+    const y = hz + 4 + t * (H - hz - 4);
+    const spread = 40 + t * 380;
+    const x = W / 2 + (rand() - .5) * 2 * spread * Math.sqrt(rand());
+    const w = range(14, 90) * (.5 + t * 1.4), h = range(1.2, 3.2) * (.7 + t * 1.2);
+    const o = Math.pow(1 - t, 1.6) * range(.3, .95);
+    svg('rect', { x: (x - w / 2).toFixed(1), y: y.toFixed(1), width: w.toFixed(1), height: h.toFixed(1), rx: h / 2, fill: i % 4 ? '#FFD596' : '#FFF0CC', opacity: o.toFixed(3) }, gl);
+  }
+  // reflexos rosados longos
+  for (let i = 0; i < 26; i++) {
+    const t = rand();
+    const y = hz + 10 + t * (H - hz) * .7, w = range(120, 420);
+    svg('rect', { x: range(-60, W), y, width: w, height: range(1, 2.4), rx: 1, fill: '#F08AA0', opacity: ((1 - t) * .25).toFixed(3) }, gl);
+  }
+
+  // linha do horizonte
+  grad('linearGradient', 'hzl', { x1: 0, y1: 0, x2: 1, y2: 0 }, [[0, '#FFE2A8', 0], [.5, '#FFF1D0', 1], [1, '#FFE2A8', 0]]);
+  svg('rect', { x: 0, y: hz - 1, width: W, height: 2, fill: 'url(#hzl)', opacity: .85 }, s);
+
+  // vinheta
+  grad('radialGradient', 'vig', { cx: .5, cy: .48, r: .75 }, [[.55, '#000', 0], [1, '#05020C', .55]]);
+  svg('rect', { x: 0, y: 0, width: W, height: H, fill: 'url(#vig)' }, s);
+
+  // textos
+  document.getElementById('kicker').style.top = P.kicker + 'px';
+  document.getElementById('info').style.top = P.info + 'px';
+  document.getElementById('logos').style.top = P.logos + 'px';
+  const date = document.getElementById('date');
+  if (date.getBoundingClientRect().width > W - 140) ART.fitWidth(date, W - 140);
+
+  ART.grain(document.getElementById('c'));
+}, ['300px Anton', '800 88px Archivo']);
+</script>
+</body>
+</html>
