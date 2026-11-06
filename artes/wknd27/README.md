@@ -17,7 +17,7 @@ Cada uma segue uma das referências que foram enviadas, adaptada ao tema e às c
 | # | Opção | Referência | Linguagem |
 |---|-------|------------|-----------|
 | 05 | **Granulado** | “Love your enemies” | Degradê granulado, SALVE / DATA! gigante com letras encostadas e “Essa” em script por cima. |
-| 06 | **Escada** | “We only fall to rise again” | Blocos em escada 3D subindo: SALVE ESSA → DATA! → SÁBADO → 06 FEV → RGNR → WEEKEND ’27. |
+| 06 | **Escada** | “We only fall to rise again” | Blocos em escada 3D. De cima para baixo: RGNR → WEEKEND ’27 → 06 FEV → SÁBADO → SALVE ESSA → DATA! Sem o tema Awaken, que ainda não foi confirmado. |
 | 07 | **Desfoque** | “Inter Session” | Fundo cinza claro, RGNR ’27 / WEEKEND em degradê com letras misturadas e desfoque nas pontas. |
 | 08 | **Jornal** | Estilo periódico | Página de jornal rasgada sobre laranja, xilogravura de nascer do sol, fita com a data e carimbo. |
 | 09 | **Gigante** | “Overthink” | 06 / FEV gigante ocupando a arte toda, com o texto pequeno dentro do vão do E. |

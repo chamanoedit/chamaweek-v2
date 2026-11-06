@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="shared.css">
 <script src="shared.js"></script>
 <style>
-  :root { --ink: #121114; --logo-h: 26px; --grain: .22; }
+  :root { --ink: #121114; --logo-h: 30px; --grain: .22; }
   .canvas { background: #E8E6E2; }
   .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(20,18,22,.16) 1.1px, transparent 1.4px); background-size: 6px 6px; opacity: .55; }
   .shade { position: absolute; inset: 0; background: radial-gradient(120% 90% at 40% 40%, rgba(255,255,255,.55), rgba(255,255,255,0) 60%), linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,.06)); }
@@ -16,22 +16,24 @@
     backface-visibility: hidden; }
   .face span { display: block; letter-spacing: -.01em; }
   svg.poly { position: absolute; left: 0; top: 0; width: var(--W); height: var(--H); overflow: visible; }
-  .micro { position: absolute; font-family: 'Inter Tight'; font-weight: 600; font-size: 19px; line-height: 1.12; color: #18161A; letter-spacing: .01em; text-transform: uppercase; }
+  .micro { position: absolute; font-family: 'Inter Tight'; font-weight: 600; font-size: 20px; line-height: 1.12; color: #18161A; letter-spacing: .01em; text-transform: uppercase; }
   .micro b { font-weight: 800; }
   .tl { left: 64px; } .tr { right: 64px; display: flex; gap: 48px; align-items: center; } .bl { left: 64px; }
   .tr .line { display: inline-block; width: 70px; height: 1.5px; background: #18161A; vertical-align: middle; margin: 0 14px; }
   .dot2 { letter-spacing: 3px; font-size: 26px; line-height: 0; }
-  #logos { justify-content: flex-start; margin-bottom: 10px; }
-  html[data-format=story] .micro { font-size: 21px; }
+  #logos { justify-content: flex-start; }
+  #stage { position: absolute; inset: 0; filter: drop-shadow(0 28px 34px rgba(60,25,10,.20)); }
+  html[data-format=story] .micro { font-size: 23px; }
+  html[data-format=story] { --logo-h: 34px; }
 </style>
 </head>
 <body>
 <div class="canvas" id="c">
   <div class="dots"></div><div class="shade"></div>
   <div id="stage"></div>
-  <div class="micro tl" id="tl">Salve essa data!<br><b>RGNR Weekend ’27</b></div>
-  <div class="micro tr" id="tr"><span>Sáb<span class="line"></span><b>06 Fev</b></span><span class="dot2">••</span><span class="dot2">•</span></div>
-  <div class="micro bl" id="bl"><div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div>Awaken<br>(Desperta)</div>
+  <div class="micro tl" id="tl"><b>RGNR Weekend ’27</b><br>Salve essa data!</div>
+  <div class="micro tr" id="tr"><span><b>06 Fev</b><span class="line"></span>Sábado</span><span class="dot2">••</span><span class="dot2">•</span></div>
+  <div class="micro bl" id="bl"><div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div></div>
 </div>
 <script>
 ART.ready(async () => {
@@ -40,14 +42,15 @@ ART.ready(async () => {
   const num = (k, d) => (q.has(k) ? parseFloat(q.get(k)) : d);
   const P = ART.pick(
     { yaw: -22, pitch: 24, roll: -42, dist: 9, F: 1220, ox: 0.54, oy: 0.44, lw: 7, micro: 64, bl: 1196 },
-    { yaw: -20, pitch: 26, roll: -56, dist: 9, F: 1250, ox: 0.5, oy: 0.47, lw: 7, micro: 276, bl: 1572 }
+    { yaw: -20, pitch: 26, roll: -56, dist: 9, F: 1400, ox: 0.5, oy: 0.47, lw: 7, micro: 276, bl: 1572 }
   );
   const yaw = num('yaw', P.yaw) * Math.PI / 180, pitch = num('pitch', P.pitch) * Math.PI / 180, roll = num('roll', P.roll) * Math.PI / 180;
   const dist = num('dist', P.dist), F = num('F', P.F);
   const ox = num('ox', P.ox) * W, oy = num('oy', P.oy) * H;
 
-  // degraus (de baixo para cima) — texto lido subindo, como na referência
-  const STEPS = ['Salve essa', 'Data!', 'Sábado', '06 Fev', 'RGNR', 'Weekend ’27'];
+  // degraus, de baixo (maior, mais perto) para cima — de cima para baixo lê-se:
+  // RGNR / WEEKEND ’27 / 06 FEV / SÁBADO / SALVE ESSA / DATA!
+  const STEPS = ['Data!', 'Salve essa', 'Sábado', '06 Fev', 'Weekend ’27', 'RGNR'];
   const N = STEPS.length, r = 1, d = num('d', 1.25), Lw = num('lw', P.lw);
   const COLORS = ['#FFC21F', '#FF8E1A', '#FF5A1F', '#F7333A', '#E0236E', '#B81F8C'];
 
@@ -74,13 +77,18 @@ ART.ready(async () => {
   const sizes = STEPS.map((_, i) => Math.pow(k, i));
   const faces = [], lens = [];
   const U = 120; // px por unidade na textura do texto
+  // comprimento de cada bloco: cabe o texto + respiro, e nunca é menor que o bloco de cima
+  // (assim a silhueta desce em degraus); os dois de baixo sangram para fora da arte
+  for (let i = N - 1; i >= 0; i--) {
+    const s = sizes[i];
+    const tw = ART.measure(STEPS[i].toUpperCase(), `900 ${0.6 * U * s}px Archivo`).width / U * 1.42;
+    const need = Math.max(tw + 0.9 * s, 2.2 * s);
+    lens[i] = i < 2 ? Lw : Math.max(need, i < N - 1 ? lens[i + 1] + 0.45 * s : 0);
+  }
   let yAcc = 0, zAcc = 0;
   for (let i = 0; i < N; i++) {
     const s = sizes[i];
-    // comprimento do bloco: o texto + respiro; os dois primeiros sangram para fora da arte
-    const tw = ART.measure(STEPS[i].toUpperCase(), `900 ${0.6 * U * s}px Archivo`).width / U * 1.42;
-    const len = i < 2 ? Lw : Math.max(tw + 0.9 * s, 2.2 * s);
-    lens[i] = len;
+    const len = lens[i];
     const y0 = yAcc, y1 = y0 + r * s, z1 = zAcc, z0 = z1 - d * s, x0 = 0, x1 = len;
     yAcc = y1; zAcc -= d * s;
     const A = [x0, y0, z1], B = [x1, y0, z1], C = [x1, y1, z1], D = [x0, y1, z1];
@@ -121,7 +129,7 @@ ART.ready(async () => {
     } else {
       const s = svg('svg', { class: 'poly', viewBox: `0 0 ${W} ${H}` });
       stage.appendChild(s);
-      let fill = '#111014';
+      let fill = f.kind === 'left' ? '#1C1A20' : '#111014';
       if (f.kind === 'bottom' || f.kind === 'top') {
         const c1 = COLORS[f.i], c2 = COLORS[Math.min(f.i + 1, N - 1)];
         gradFor(s, 'g' + k, c1, c2, P2[0], P2[3]);
