@@ -36,6 +36,19 @@ Os logos **RGNR** e **IPDA** nas artes são **provisórios** (só o nome em text
 
 Cada logo é recolorido automaticamente na cor da arte. Para manter as cores originais, crie um arquivo vazio `logos/manter-cores`.
 
+## PSD editável (06 Escada)
+
+`export/wknd27-06-escada-feed.psd` e `export/wknd27-06-escada-story.psd`, com:
+
+- **ESCADA**: um grupo por degrau (1 · RGNR … 6 · DATA!). Cada um tem o texto como camada de texto editável, a frente e a lateral como formas vetoriais e o topo como forma com degradê editável.
+- **TEXTOS DO TOPO**, **LOGOS** (provisórios, para trocar pelos oficiais), **Sombra da escada**, **Granulado** (Sobrepor, 22%) e **FUNDO** (cor de fundo editável, luz e pontilhado).
+
+Antes de abrir, instale as fontes **Archivo** (o estilo usado é *Expanded Black*) e **Inter Tight** (SemiBold e ExtraBold), ambas do Google Fonts.
+Ao abrir, o Photoshop pergunta se quer atualizar as camadas de texto: clique em **Atualizar**.
+O texto dos degraus está em perspectiva aproximada (inclinado); ao trocar a palavra, o encaixe se mantém.
+
+Para gerar de novo: `npm i ag-psd pngjs playwright` e depois `node psd.js`.
+
 ## Gerar de novo
 
 Requer Node e Playwright (`npm i playwright`).

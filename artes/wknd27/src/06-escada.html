@@ -24,16 +24,22 @@
   #logos { justify-content: flex-start; }
   #stage { position: absolute; inset: 0; filter: drop-shadow(0 28px 34px rgba(60,25,10,.20)); }
   html[data-format=story] .micro { font-size: 23px; }
+  /* exportação PSD: cada camada é fotografada sozinha, com fundo transparente */
+  html.iso, html.iso body, html.iso .canvas { background: transparent !important; }
+  html.iso #stage { filter: none !important; }
+  html.iso .face.notext span { visibility: hidden !important; }
+  html.iso .face.textonly { background: transparent !important; }
+  html.iso svg.grain { mix-blend-mode: normal !important; opacity: 1 !important; }
   html[data-format=story] { --logo-h: 34px; }
 </style>
 </head>
 <body>
 <div class="canvas" id="c">
-  <div class="dots"></div><div class="shade"></div>
+  <div class="dots" data-layer="pontilhado"></div><div class="shade" data-layer="luz"></div>
   <div id="stage"></div>
-  <div class="micro tl" id="tl"><b>RGNR Weekend ’27</b><br>Salve essa data!</div>
-  <div class="micro tr" id="tr"><span><b>06 Fev</b><span class="line"></span>Sábado</span><span class="dot2">••</span><span class="dot2">•</span></div>
-  <div class="micro bl" id="bl"><div class="logos" id="logos"><div class="logo" data-logo="rgnr">RGNR</div><span class="sep"></span><div class="logo" data-logo="ipda">IPDA</div></div></div>
+  <div class="micro tl" id="tl"><b data-layer="m-evento">RGNR Weekend ’27</b><br><span data-layer="m-salve">Salve essa data!</span></div>
+  <div class="micro tr" id="tr"><span><b data-layer="m-data">06 Fev</b><span class="line" data-layer="m-linha"></span><span data-layer="m-dia">Sábado</span></span><span class="dot2" data-layer="m-pontos">••</span><span class="dot2" data-layer="m-ponto">•</span></div>
+  <div class="micro bl" id="bl"><div class="logos" id="logos"><div class="logo" data-logo="rgnr" data-layer="logo-rgnr">RGNR</div><span class="sep" data-layer="logo-sep"></span><div class="logo" data-logo="ipda" data-layer="logo-ipda">IPDA</div></div></div>
 </div>
 <script>
 ART.ready(async () => {
@@ -113,8 +119,11 @@ ART.ready(async () => {
     svg('stop', { offset: 0, 'stop-color': c1 }, g);
     svg('stop', { offset: 1, 'stop-color': c2 }, g);
   };
+  const PSD = (window.__PSD = { W, H, bg: '#E8E6E2', steps: STEPS, faces: [], texts: [] });
+  const NAMES = { front: 'frente', top: 'topo', left: 'lateral', bottom: 'base', right: 'ponta' };
   vis.forEach((f, k) => {
     const P2 = f.pts.map(proj);
+    const lid = `d${f.i}-${NAMES[f.kind]}`;
     if (f.kind === 'front') {
       const el = document.createElement('div');
       el.className = 'face';
@@ -125,25 +134,76 @@ ART.ready(async () => {
       el.style.fontSize = (0.6 * U * s) + 'px';
       const sp = document.createElement('span'); sp.textContent = STEPS[f.i]; el.appendChild(sp);
       el.style.transform = ART.quadTransform(w, h, P2);
+      el.dataset.layer = lid;
       stage.appendChild(el);
+      PSD.faces.push({ id: lid, kind: f.kind, i: f.i, pts: P2, fill: '#111014' });
+      // texto: ajuste afim da perspectiva (camada de texto editável no Photoshop)
+      const probe = document.createElement('i');
+      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      sp.prepend(probe);
+      const x0 = probe.offsetLeft, base = probe.offsetTop, tw = sp.offsetWidth, fsz = parseFloat(el.style.fontSize);
+      probe.remove();
+      const Hm = homography(w, h, P2);
+      const pts = [];
+      for (let a = 0; a <= 4; a++) for (let b = 0; b <= 2; b++) {
+        const u = x0 + tw * a / 4, v = base - fsz * 0.72 * b / 2;
+        pts.push([u - x0, v - base, ...Hm(u, v)]);
+      }
+      const A = fitAffine(pts);
+      PSD.texts.push({ id: lid.replace('frente', 'texto'), face: lid, i: f.i, text: STEPS[f.i].toUpperCase(), fontSize: fsz, tracking: -10,
+        transform: [A[0], A[3], A[1], A[4], A[2], A[5]] });
     } else {
       const s = svg('svg', { class: 'poly', viewBox: `0 0 ${W} ${H}` });
       stage.appendChild(s);
-      let fill = f.kind === 'left' ? '#1C1A20' : '#111014';
+      let fill = f.kind === 'left' || f.kind === 'right' ? '#1C1A20' : '#111014';
       if (f.kind === 'bottom' || f.kind === 'top') {
         const c1 = COLORS[f.i], c2 = COLORS[Math.min(f.i + 1, N - 1)];
         gradFor(s, 'g' + k, c1, c2, P2[0], P2[3]);
         fill = `url(#g${k})`;
       }
       svg('polygon', { points: P2.map(p => p.map(v => v.toFixed(1)).join(',')).join(' '), fill, stroke: fill, 'stroke-width': .8, 'stroke-linejoin': 'round' }, s);
+      s.dataset.layer = lid;
+      PSD.faces.push(f.kind === 'top' || f.kind === 'bottom'
+        ? { id: lid, kind: f.kind, i: f.i, pts: P2, grad: [COLORS[f.i], COLORS[Math.min(f.i + 1, N - 1)]], from: P2[0], to: P2[3] }
+        : { id: lid, kind: f.kind, i: f.i, pts: P2, fill: f.kind === 'left' || f.kind === 'right' ? '#1C1A20' : '#111014' });
     }
   });
+  // sombra da escada como camada própria (só na exportação do PSD)
+  if (q.has('psd')) {
+    const sh = stage.cloneNode(true);
+    sh.id = 'shadowClone';
+    sh.querySelectorAll('[data-layer]').forEach(e => e.removeAttribute('data-layer'));
+    Object.assign(sh.style, { filter: 'brightness(0) blur(17px)', transform: 'translateY(28px)', visibility: 'hidden' });
+    sh.dataset.layer = 'sombra';
+    stage.before(sh);
+  }
+
+  function homography(w, h, p) {
+    const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = p;
+    const dx1 = x1 - x2, dx2 = x3 - x2, dy1 = y1 - y2, dy2 = y3 - y2, sx = x0 - x1 + x2 - x3, sy2 = y0 - y1 + y2 - y3;
+    let g = 0, hh = 0;
+    if (Math.abs(sx) > 1e-9 || Math.abs(sy2) > 1e-9) { const det = dx1 * dy2 - dx2 * dy1; g = (sx * dy2 - dx2 * sy2) / det; hh = (dx1 * sy2 - sx * dy1) / det; }
+    const a = x1 - x0 + g * x1, b = x3 - x0 + hh * x3, c = x0, d = y1 - y0 + g * y1, e = y3 - y0 + hh * y3, ff = y0;
+    return (u, v) => { const U = u / w, V = v / h, z = g * U + hh * V + 1; return [(a * U + b * V + c) / z, (d * U + e * V + ff) / z]; };
+  }
+  // mínimos quadrados: [x, y] = A · [u, v, 1]  → A = [a, b, c, d, e, f]
+  function fitAffine(pts) {
+    const M = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], bx = [0, 0, 0], by = [0, 0, 0];
+    pts.forEach(([u, v, x, y]) => { const r = [u, v, 1]; for (let i = 0; i < 3; i++) { for (let j = 0; j < 3; j++) M[i][j] += r[i] * r[j]; bx[i] += r[i] * x; by[i] += r[i] * y; } });
+    const solve = (A, b) => { // Cramer 3x3
+      const det = m => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+      const D = det(A);
+      return [0, 1, 2].map(k => det(A.map((row, i) => row.map((v, j) => (j === k ? b[i] : v)))) / D);
+    };
+    return [...solve(M, bx), ...solve(M, by)];
+  }
 
   // microtipografia
   document.getElementById('tl').style.top = P.micro + 'px';
   document.getElementById('tr').style.top = P.micro + 'px';
   document.getElementById('bl').style.top = P.bl + 'px';
   ART.grain(document.getElementById('c'), 0.9);
+  document.querySelector('svg.grain').dataset.layer = 'granulado';
 }, ['900 80px Archivo', '600 19px "Inter Tight"']);
 </script>
 </body>
