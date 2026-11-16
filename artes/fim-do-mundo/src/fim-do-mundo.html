@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Culto RGNR — Fim do Mundo (reconstrução editável)</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter+Tight:wght@900&display=swap" rel="stylesheet">
+<script src="medidas.js"></script>
+<style>
+  * { margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; background: #000; }
+  svg { display: block; }
+  /* exportação PSD: cada camada é fotografada sozinha, com fundo transparente */
+  html.iso, html.iso body { background: transparent !important; }
+</style>
+</head>
+<body>
+<svg id="art" width="1080" height="1350" viewBox="0 0 1080 1350" xmlns="http://www.w3.org/2000/svg"></svg>
+<script>
+// Fontes livres mais próximas da arte original (o título parece Tusker Grotesk, que não está disponível aqui):
+// condensada = Anton estreitada a 88%; rodapé = Inter Tight Black.
+const W = 1080, H = 1350, NS = 'http://www.w3.org/2000/svg';
+const COND = { family: 'Anton', ps: 'Anton-Regular', weight: 400, hscale: 0.88 };
+const GROT = { family: 'Inter Tight', ps: 'InterTight-Black', weight: 900, hscale: 1 };
+const BLOCKS = [ // ordem de cima para baixo no painel de camadas
+  { id: 'data', name: '21 NOV', font: COND, align: 'left', color: 'creme' },
+  { id: 'hora', name: '19 HORAS', font: COND, align: 'right', color: 'creme' },
+  { id: 'culto', name: 'CULTO RGNR', font: COND, align: 'left', color: 'titulo', texture: true },
+  { id: 'titulo', name: 'FIM DO MUNDO', font: COND, align: 'left', color: 'titulo', texture: true },
+  { id: 'endereco', name: 'Endereço', font: GROT, align: 'left', color: 'rodape' },
+  { id: 'transfer', name: 'Transfer', font: GROT, align: 'right', color: 'rodape' },
+];
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const ctx = document.createElement('canvas').getContext('2d');
+const measure = (text, f, size, ls) => { ctx.font = `${f.weight} ${size}px "${f.family}"`; ctx.letterSpacing = `${ls}px`; return ctx.measureText(text); };
+
+(async () => {
+  await Promise.all([document.fonts.load('400 100px Anton', 'SÁBADO'), document.fonts.load('900 22px "Inter Tight"', 'SÁBADO')]);
+  await document.fonts.ready;
+  const med = window.MED;
+  const svg = document.getElementById('art');
+  const defs = el('defs', {}, svg);
+  el('image', { href: 'fundo.png', x: 0, y: 0, width: W, height: H, 'data-layer': 'fundo' }, svg);
+  el('image', { href: 'logo-regenere.png', x: 476, y: 54, width: 128, height: 38, 'data-layer': 'logo' }, svg);
+
+  const PSD = (window.__PSD = { W, H, blocks: [] });
+  for (const b of BLOCKS) {
+    const lines = med.lines.filter(l => l.block === b.id);
+    const f = b.font, s = f.hscale;
+    // tamanho pela altura das maiúsculas
+    const capR = measure('H', f, 1000, 0).actualBoundingBoxAscent / 1000;
+    const size = lines.reduce((a, l) => a + (l.base - l.capTop), 0) / lines.length / capR;
+    // espaçamento (em) de cada linha para fechar a largura de tinta do original
+    const fitted = lines.map(l => {
+      const m0 = measure(l.text, f, size, 0);
+      const w0 = m0.actualBoundingBoxLeft + m0.actualBoundingBoxRight;
+      const n = [...l.text].length;
+      const t = ((l.inkR - l.inkL) / s - w0) / ((n - 1) * size);
+      return { ...l, t };
+    });
+    // no rodapé o espaçamento é um só por bloco (média); no título cada linha tem o seu
+    const shared = f === GROT;
+    const tMean = fitted.reduce((a, l) => a + l.t, 0) / fitted.length;
+    fitted.forEach(l => { if (shared) l.t = tMean; l.ls = l.t * size; });
+    // âncora do bloco (Photoshop: esquerda = origem da linha; direita = fim da linha, incluindo o espaçamento final)
+    const anchors = fitted.map(l => {
+      const m = measure(l.text, f, size, l.ls);
+      return b.align === 'left' ? l.inkL + m.actualBoundingBoxLeft * s : l.inkR - m.actualBoundingBoxRight * s + m.width * s;
+    }).sort((a, c) => a - c);
+    const anchor = anchors[Math.floor(anchors.length / 2)];
+    const base0 = fitted[0].base;
+    const leading = fitted.length > 1 ? (fitted[fitted.length - 1].base - base0) / (fitted.length - 1) : 0;
+    const color = med.cores[b.color];
+
+    const g = el('g', { 'data-layer': b.id + (b.texture ? '-textura-final' : '') }, svg);
+    const solid = el('g', { 'data-layer': b.id + '-texto', fill: color }, b.texture ? null : g);
+    fitted.forEach((l, i) => {
+      const m = measure(l.text, f, size, l.ls);
+      const x = b.align === 'left' ? anchor : anchor - m.width * s;
+      const y = base0 + i * leading;
+      const t = el('text', { x, y, 'font-family': f.family, 'font-weight': f.weight, 'font-size': size.toFixed(3),
+        'letter-spacing': l.ls.toFixed(3), transform: `translate(${x} 0) scale(${s} 1) translate(${-x} 0)` }, solid);
+      t.textContent = l.text;
+    });
+    if (b.texture) {
+      // texto vazado na textura (no PSD: textura em máscara de recorte sobre a camada de texto)
+      const mask = el('mask', { id: 'm-' + b.id, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: W, height: H }, defs);
+      const mtxt = solid.cloneNode(true); mtxt.removeAttribute('data-layer'); mtxt.setAttribute('fill', '#fff'); mask.appendChild(mtxt);
+      el('image', { href: 'textura.png', x: 0, y: 0, width: W, height: H, mask: `url(#m-${b.id})` }, g);
+      solid.setAttribute('visibility', 'hidden');
+      svg.appendChild(solid);
+    }
+    PSD.blocks.push({ id: b.id, name: b.name, font: f.ps, size, hscale: s, color, align: b.align, anchor, base0, leading,
+      texture: !!b.texture, lines: fitted.map(l => ({ text: l.text, tracking: Math.round(l.t * 1000) })) });
+  }
+  el('image', { href: 'textura.png', x: 0, y: 0, width: W, height: H, 'data-layer': 'textura', visibility: 'hidden' }, svg);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>
